@@ -1,5 +1,28 @@
 # React + TypeScript + Vite
 
+## Setup & Deployment for GitHub Pages
+
+1. **Install dependencies:**
+   ```sh
+   yarn
+   ```
+2. **Run the development server:**
+   ```sh
+   yarn dev
+   ```
+3. **Build the project:**
+   ```sh
+   yarn build
+   ```
+   The production build will be output to the `docs/` folder.
+4. **Deploy to GitHub Pages:**
+   ```sh
+   yarn deploy
+   ```
+   This will publish the `docs/` folder to the `gh-pages` branch for GitHub Pages hosting.
+
+---
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
