@@ -1,5 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FaBook, FaBoxOpen, FaDna, FaHeartbeat, FaMusic, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import './CharacterSheet.css';
+import ExperiencesSection from './sections/ExperiencesSection';
+import FeaturesDomainsSection from './sections/FeaturesDomainsSection';
+import HealthSection from './sections/HealthSection';
+import InfoSection from './sections/InfoSection';
+import InventorySection from './sections/InventorySection';
+import TraitsSection from './sections/TraitsSection';
+import WeaponsArmorSection from './sections/WeaponsArmorSection';
 
 // TypeScript types for character state
 export interface Weapon {
@@ -190,12 +198,27 @@ const TRAIT_NAMES = [
 ] as const;
 type TraitName = typeof TRAIT_NAMES[number];
 
+// Section keys and labels/icons
+const SECTIONS = [
+    { key: 'info', label: 'Info', icon: <FaUser /> },
+    { key: 'traits', label: 'Traits', icon: <FaDna /> },
+    { key: 'health', label: 'Health', icon: <FaHeartbeat /> },
+    { key: 'weapons', label: 'Weapons', icon: <FaShieldAlt /> },
+    { key: 'experiences', label: 'Experiences', icon: <FaBook /> },
+    { key: 'features', label: 'Features', icon: <FaStar /> },
+    { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
+    // Rally only for Bard
+];
+
+const isMobile = () => window.innerWidth <= 700;
+
 const CharacterSheet: React.FC = () => {
     const [characterList, setCharacterList] = useState<DaggerheartCharacter[]>([]);
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
     const [isCreationMode, setIsCreationMode] = useState(true);
     const [creationError, setCreationError] = useState<string | null>(null);
-
+    const [activeSection, setActiveSection] = useState('info');
+    const [mobile, setMobile] = useState(isMobile());
     const currentCharacter = characterList.find(char => char.id === currentCharacterId);
 
     useEffect(() => {
@@ -215,6 +238,12 @@ const CharacterSheet: React.FC = () => {
             localStorage.setItem('daggerheartCharacters', JSON.stringify(characterList));
         }
     }, [characterList]);
+
+    useEffect(() => {
+        const onResize = () => setMobile(isMobile());
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
 
     const updateCharacterField = useCallback((field: keyof DaggerheartCharacter, value: any) => {
         setCharacterList(prevList =>
@@ -470,6 +499,12 @@ const CharacterSheet: React.FC = () => {
         setIsCreationMode(true);
     };
 
+    // Helper to show/hide sections
+    const showSection = (key: string) => {
+        if (mobile) return activeSection === key;
+        return true;
+    };
+
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
@@ -489,369 +524,138 @@ const CharacterSheet: React.FC = () => {
                         </div>
                     )}
                 </div>
-                {isCreationMode ? (
-                    <>
-                        <div className="character-controls box">
-                            <label htmlFor="character-select">Select Character:</label>
-                            <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                                {characterList.map(char => (
-                                    <option key={char.id} value={char.id}>
-                                        {char.name || 'Unnamed Character'}
-                                    </option>
-                                ))}
-                            </select>
-                            <button onClick={handleNewCharacter}>New Character</button>
-                            <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
-                        </div>
+                <div className="character-controls box">
+                    <label htmlFor="character-select">Select Character:</label>
+                    <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
+                        {characterList.map(char => (
+                            <option key={char.id} value={char.id}>
+                                {char.name || 'Unnamed Character'}
+                            </option>
+                        ))}
+                    </select>
+                    <button onClick={handleNewCharacter}>New Character</button>
+                    <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
+                </div>
 
-                        {/* Class Selection Dropdown */}
-                        <section className="info-section box">
-                            <div className="input-group">
-                                <label htmlFor="class-select">CLASS:</label>
-                                <select
-                                    id="class-select"
-                                    value={currentCharacter.characterClass}
-                                    onChange={e => updateCharacterField('characterClass', e.target.value as CharacterClass)}
-                                >
-                                    <option value="">Select a class...</option>
-                                    {CLASS_OPTIONS.map(cls => (
-                                        <option key={cls} value={cls}>{cls}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            {/* Existing basic info fields, except CLASS */}
-                            <div className="input-group">
-                                <label>NAME:</label>
-                                <input type="text" value={currentCharacter.name} onChange={(e) => updateCharacterField('name', e.target.value)} />
-                            </div>
-                            <div className="input-group">
-                                <label>PRONOUNS:</label>
-                                <input type="text" value={currentCharacter.pronouns} onChange={(e) => updateCharacterField('pronouns', e.target.value)} />
-                            </div>
-                            {/* Subclass Dropdown (depends on class) */}
-                            <div className="input-group">
-                                <label htmlFor="subclass-select">SUBCLASS:</label>
-                                <select
-                                    id="subclass-select"
-                                    value={currentCharacter.subclass}
-                                    onChange={e => updateCharacterField('subclass', e.target.value)}
-                                    disabled={!currentCharacter.characterClass}
-                                >
-                                    <option value="">Select a subclass...</option>
-                                    {subclassOptions.map(sub => (
-                                        <option key={sub} value={sub}>{sub}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            {/* Ancestry Dropdown */}
-                            <div className="input-group">
-                                <label htmlFor="ancestry-select">ANCESTRY:</label>
-                                <select
-                                    id="ancestry-select"
-                                    value={currentCharacter.heritage}
-                                    onChange={e => updateCharacterField('heritage', e.target.value as Ancestry)}
-                                >
-                                    <option value="">Select an ancestry...</option>
-                                    {ANCESTRY_OPTIONS.map(anc => (
-                                        <option key={anc} value={anc}>{anc}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            {/* Community Dropdown */}
-                            <div className="input-group">
-                                <label htmlFor="community-select">COMMUNITY:</label>
-                                <select
-                                    id="community-select"
-                                    value={currentCharacter.community || ''}
-                                    onChange={e => updateCharacterField('community', e.target.value as Community)}
-                                >
-                                    <option value="">Select a community...</option>
-                                    {COMMUNITY_OPTIONS.map(com => (
-                                        <option key={com} value={com}>{com}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="input-group">
-                                <label>LEVEL:</label>
-                                <input type="number" value={currentCharacter.level} onChange={(e) => updateCharacterField('level', parseInt(e.target.value) || 0)} min="0" />
-                            </div>
-                            {/* Show apply suggestions button if class has suggestions */}
-                            {currentCharacter.characterClass && CLASS_SUGGESTIONS[currentCharacter.characterClass as CharacterClass] && (
-                                <div style={{ marginBottom: 10 }}>
-                                    <button type="button" onClick={handleApplySuggestions}>
-                                        Apply {currentCharacter.characterClass} Suggestions
-                                    </button>
-                                </div>
-                            )}
-                        </section>
-
-                        <div className="main-layout">
-                            {/* Traits & Evasion */}
-                            {/* Trait Assignment UI */}
-                            <section className="traits-section box">
-                                <h2 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                    TRAITS
-                                    <span
-                                        style={{ cursor: 'pointer', fontSize: 18 }}
-                                        onMouseEnter={() => setShowTraitHelp(true)}
-                                        onMouseLeave={() => setShowTraitHelp(false)}
-                                        tabIndex={0}
-                                        aria-label="Trait assignment help"
-                                    >
-                                        ℹ️
-                                    </span>
-                                    {showTraitHelp && (
-                                        <span style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: 8, position: 'absolute', zIndex: 10, marginLeft: 8, maxWidth: 320 }}>
-                                            Assign the following values to the six traits: <b>−1, 0, 0, +1, +1, +2</b>. Each value must be used exactly once. Traits affect your character's abilities in different situations.
-                                        </span>
-                                    )}
-                                </h2>
-                                <form
-                                    onSubmit={e => {
-                                        e.preventDefault();
-                                        applyTraitAssignment();
-                                    }}
-                                    style={{ marginBottom: 16 }}
-                                >
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-                                        {TRAIT_NAMES.map(trait => (
-                                            <div
-                                                className="trait-row"
-                                                key={trait}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', gap: 8,
-                                                    background: traitIssues[trait] === 'duplicate' ? '#ffeaea' : traitIssues[trait] === 'unassigned' ? '#fffbe6' : undefined,
-                                                    borderRadius: 4, padding: 4
-                                                }}
-                                            >
-                                                <span className="trait-name" style={{ width: 90 }}>{trait.toUpperCase()}:</span>
-                                                <select
-                                                    value={traitAssignment[trait] ?? ''}
-                                                    onChange={e => handleTraitChange(trait, e.target.value === '' ? '' : Number(e.target.value) as TraitValue)}
-                                                >
-                                                    <option value="">--</option>
-                                                    {getAvailableValues(trait).map(val => (
-                                                        <option key={val} value={val}>{val >= 0 ? `+${val}` : val}</option>
-                                                    ))}
-                                                </select>
-                                                {traitIssues[trait] === 'duplicate' && <span style={{ color: 'red', fontSize: 12 }}>Duplicate</span>}
-                                                {traitIssues[trait] === 'unassigned' && <span style={{ color: '#b59a00', fontSize: 12 }}>Unassigned</span>}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div style={{ marginTop: 8, fontSize: 14 }}>
-                                        <b>Remaining values:</b> {remainingTraitValues.length === 0 ? 'None' : remainingTraitValues.map(v => v >= 0 ? `+${v}` : v).join(', ')}
-                                    </div>
-                                    <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
-                                        <button type="submit" disabled={!isValidTraitAssignment}>
-                                            Apply Trait Assignment
-                                        </button>
-                                        <button type="button" onClick={resetTraitAssignment}>
-                                            Reset
-                                        </button>
-                                    </div>
-                                    {!isValidTraitAssignment && (
-                                        <div style={{ color: 'red', marginTop: 8 }}>
-                                            You must assign −1, 0, 0, +1, +1, +2 across the six traits. No duplicates.
-                                        </div>
-                                    )}
-                                </form>
-                            </section>
-                            <div className="trait-row evasion">
-                                <span className="trait-name">EVASION:</span>
-                                <input type="number" value={currentCharacter?.evasion} onChange={(e) => updateCharacterField('evasion', parseInt(e.target.value) || 0)} className="evasion-input" min="0" />
-                            </div>
-                        </div>
-
-                        {/* Damage & Health */}
-                        <section className="health-section box">
-                            <h2>DAMAGE & HEALTH</h2>
-                            <div className="thresholds">
-                                <h3>DAMAGE THRESHOLDS (Add your level)</h3>
-                                <div className="threshold-row">
-                                    <span>MINOR: {calculateThreshold(10)} (Mark 1 HP)</span>
-                                </div>
-                                <div className="threshold-row">
-                                    <span>MAJOR: {calculateThreshold(15)} (Mark 2 HP)</span>
-                                </div>
-                                <div className="threshold-row">
-                                    <span>SEVERE: {calculateThreshold(20)} (Mark 3 HP)</span>
-                                </div>
-                            </div>
-
-                            <div className="resource-tracker">
-                                <label>HP:</label>
-                                <div className="circles">
-                                    {currentCharacter?.hp.map((filled, index) => (
-                                        <span key={index} className={`circle ${filled ? 'filled' : ''}`} onClick={() => toggleCircles('hp', index)}></span>
-                                    ))}
-                                </div>
-                                <label>STRESS:</label>
-                                <div className="circles">
-                                    {currentCharacter?.stress.map((filled, index) => (
-                                        <span key={index} className={`circle ${filled ? 'filled' : ''}`} onClick={() => toggleCircles('stress', index)}></span>
-                                    ))}
-                                </div>
-                                <label>HOPE:</label>
-                                <div className="circles">
-                                    {currentCharacter?.hope.map((filled, index) => (
-                                        <span key={index} className={`circle ${filled ? 'filled' : ''}`} onClick={() => toggleCircles('hope', index)}></span>
-                                    ))}
-                                </div>
-                                <p className="hope-tip">*Spend a Hope to use an experience or help an ally.</p>
-                                <label>PROFICIENCY:</label>
-                                <div className="circles proficiency-circles">
-                                    {currentCharacter?.proficiency.map((filled, index) => (
-                                        <span key={index} className={`circle ${filled ? 'filled' : ''}`} onClick={() => toggleCircles('proficiency', index)}></span>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* Active Weapons & Armor */}
-                        <div className="layout-row">
-                            <section className="weapons-armor-section box flex-half">
-                                <h2>ACTIVE WEAPONS</h2>
-                                {currentCharacter?.activeWeapons.map((weapon, index) => (
-                                    <div className="weapon-entry" key={index}>
-                                        <h3>Weapon {index + 1}:</h3>
-                                        <input type="text" placeholder="Name" value={weapon.name} onChange={(e) => handleWeaponChange(index, 'name', e.target.value)} />
-                                        <input type="text" placeholder="Trait & Range" value={weapon.traitRange} onChange={(e) => handleWeaponChange(index, 'traitRange', e.target.value)} />
-                                        <input type="text" placeholder="Damage Dice & Type" value={weapon.damageDiceType} onChange={(e) => handleWeaponChange(index, 'damageDiceType', e.target.value)} />
-                                        <textarea placeholder="Feature" value={weapon.feature} onChange={(e) => handleWeaponChange(index, 'feature', e.target.value)}></textarea>
-                                    </div>
-                                ))}
-
-                                <h2>ACTIVE ARMOR</h2>
-                                {currentCharacter?.activeArmor.map((armor, index) => (
-                                    <div className="armor-entry" key={index}>
-                                        <h3>Armor {index + 1}:</h3>
-                                        <input type="text" placeholder="Name" value={armor.name} onChange={(e) => handleArmorChange(index, 'name', e.target.value)} />
-                                        <textarea placeholder="Feature" value={armor.feature} onChange={(e) => handleArmorChange(index, 'feature', e.target.value)}></textarea>
-                                    </div>
-                                ))}
-                            </section>
-
-                            {/* Experiences */}
-                            <section className="experiences-section box flex-half">
-                                <h2>EXPERIENCES</h2>
-                                <textarea placeholder="List your experiences here, one per line..." value={currentCharacter?.experiences} onChange={(e) => updateCharacterField('experiences', e.target.value)}></textarea>
-                            </section>
-                        </div>
-
-                        {/* Class Features & Domain Cards */}
-                        <div className="layout-row">
-                            <section className="class-domain-section box flex-half">
-                                <h2>CLASS FEATURES</h2>
-                                <textarea placeholder="Describe your class features here..." value={currentCharacter?.classFeatures} onChange={(e) => updateCharacterField('classFeatures', e.target.value)}></textarea>
-
-                                <h2>DOMAIN CARDS</h2>
-                                <textarea placeholder="List your domain cards and their features here..." value={currentCharacter?.domainCards} onChange={(e) => updateCharacterField('domainCards', e.target.value)}></textarea>
-                            </section>
-
-                            {/* Inventory & Notes */}
-                            <section className="inventory-notes-section box flex-half">
-                                <h2>INVENTORY & NOTES</h2>
-                                <div className="input-group">
-                                    <label>GOLD:</label>
-                                    <input type="text" placeholder="e.g., 5 Handfuls" value={currentCharacter?.gold} onChange={(e) => updateCharacterField('gold', e.target.value)} />
-                                </div>
-                                <textarea placeholder="List your inventory items and general notes here..." value={currentCharacter?.inventory} onChange={(e) => updateCharacterField('inventory', e.target.value)}></textarea>
-                            </section>
-                        </div>
-
-                        {/* Rally Section - only for Bard */}
-                        {currentCharacter?.characterClass === 'Bard' && (
-                            <section className="rally-section box">
-                                <h2>RALLY</h2>
-                                <p>
-                                    Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
-                                </p>
-                            </section>
-                        )}
-                        <div style={{ marginTop: 24, textAlign: 'center' }}>
-                            <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
-                                Complete Character
-                            </button>
-                            {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {/* Playable Character Display (read-only except for in-play fields) */}
-                        <div className="character-controls box">
-                            <label htmlFor="character-select">Select Character:</label>
-                            <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                                {characterList.map(char => (
-                                    <option key={char.id} value={char.id}>
-                                        {char.name || 'Unnamed Character'}
-                                    </option>
-                                ))}
-                            </select>
-                            <button onClick={handleNewCharacter}>New Character</button>
-                            <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
-                        </div>
-
-                        <div className="main-layout">
-                            <section className="traits-section box">
-                                {/* Display traits as read-only */}
-                                <h2>TRAITS</h2>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-                                    {TRAIT_NAMES.map(trait => (
-                                        <div className="trait-row" key={trait} style={{ display: 'flex', alignItems: 'center', gap: 8, borderRadius: 4, padding: 4 }}>
-                                            <span className="trait-name" style={{ width: 90 }}>{trait.toUpperCase()}:</span>
-                                            <span style={{ fontWeight: 600 }}>{currentCharacter?.[trait]}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                            <div className="trait-row evasion">
-                                <span className="trait-name">EVASION:</span>
-                                <input type="number" value={currentCharacter?.evasion} onChange={(e) => updateCharacterField('evasion', parseInt(e.target.value) || 0)} className="evasion-input" min="0" />
-                            </div>
-                        </div>
-                        {/* Damage & Health (editable) */}
-                        <section className="health-section box">
-                            {/* ... health section ... */}
-                        </section>
-                        {/* Active Weapons & Armor (editable) */}
-                        <div className="layout-row">
-                            {/* ... weapons and armor ... */}
-                        </div>
-                        {/* Class Features & Domain Cards (read-only) */}
-                        <div className="layout-row">
-                            <section className="class-domain-section box flex-half">
-                                <h2>CLASS FEATURES</h2>
-                                <div style={{ whiteSpace: 'pre-line', background: '#f9fbe7', padding: 8, borderRadius: 4 }}>{currentCharacter?.classFeatures}</div>
-                                <h2>DOMAIN CARDS</h2>
-                                <div style={{ whiteSpace: 'pre-line', background: '#f9fbe7', padding: 8, borderRadius: 4 }}>{currentCharacter?.domainCards}</div>
-                            </section>
-                            <section className="inventory-notes-section box flex-half">
-                                <h2>INVENTORY & NOTES</h2>
-                                <div className="input-group">
-                                    <label>GOLD:</label>
-                                    <input type="text" placeholder="e.g., 5 Handfuls" value={currentCharacter?.gold} onChange={(e) => updateCharacterField('gold', e.target.value)} />
-                                </div>
-                                <textarea placeholder="List your inventory items and general notes here..." value={currentCharacter?.inventory} onChange={(e) => updateCharacterField('inventory', e.target.value)}></textarea>
-                            </section>
-                        </div>
-                        {/* Rally Section - only for Bard */}
-                        {currentCharacter?.characterClass === 'Bard' && (
-                            <section className="rally-section box">
-                                <h2>RALLY</h2>
-                                <p>
-                                    Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
-                                </p>
-                            </section>
-                        )}
-                        <div style={{ marginTop: 24, textAlign: 'center' }}>
-                            <button onClick={handleEditCharacter} style={{ fontSize: 16, padding: '6px 18px' }}>
-                                Edit Character
-                            </button>
-                        </div>
-                    </>
+                {/* Info Section */}
+                {showSection('info') && (
+                    <InfoSection
+                        currentCharacter={currentCharacter}
+                        updateCharacterField={updateCharacterField}
+                        subclassOptions={subclassOptions}
+                        handleApplySuggestions={handleApplySuggestions}
+                        CLASS_OPTIONS={CLASS_OPTIONS}
+                        CLASS_SUGGESTIONS={CLASS_SUGGESTIONS}
+                        ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
+                        COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
+                    />
                 )}
+
+                {/* Traits Section */}
+                {showSection('traits') && (
+                    <TraitsSection
+                        currentCharacter={currentCharacter}
+                        traitAssignment={traitAssignment}
+                        traitIssues={traitIssues}
+                        isValidTraitAssignment={isValidTraitAssignment}
+                        remainingTraitValues={remainingTraitValues}
+                        TRAIT_NAMES={TRAIT_NAMES}
+                        getAvailableValues={getAvailableValues}
+                        handleTraitChange={handleTraitChange}
+                        applyTraitAssignment={applyTraitAssignment}
+                        resetTraitAssignment={resetTraitAssignment}
+                        showTraitHelp={showTraitHelp}
+                        setShowTraitHelp={setShowTraitHelp}
+                        updateCharacterField={updateCharacterField}
+                    />
+                )}
+
+                {/* Health Section */}
+                {showSection('health') && (
+                    <HealthSection
+                        currentCharacter={currentCharacter}
+                        calculateThreshold={calculateThreshold}
+                        toggleCircles={toggleCircles}
+                    />
+                )}
+
+                {/* Weapons & Armor Section */}
+                {showSection('weapons') && (
+                    <WeaponsArmorSection
+                        currentCharacter={currentCharacter}
+                        handleWeaponChange={handleWeaponChange}
+                        handleArmorChange={handleArmorChange}
+                    />
+                )}
+
+                {/* Experiences Section */}
+                {showSection('experiences') && (
+                    <ExperiencesSection
+                        currentCharacter={currentCharacter}
+                        updateCharacterField={updateCharacterField}
+                    />
+                )}
+
+                {/* Features & Domains Section */}
+                {showSection('features') && (
+                    <FeaturesDomainsSection
+                        currentCharacter={currentCharacter}
+                        updateCharacterField={updateCharacterField}
+                    />
+                )}
+
+                {/* Inventory Section */}
+                {showSection('inventory') && (
+                    <InventorySection
+                        currentCharacter={currentCharacter}
+                        updateCharacterField={updateCharacterField}
+                    />
+                )}
+
+                {/* Rally Section (Bard only) */}
+                {currentCharacter?.characterClass === 'Bard' && showSection('rally') && (
+                    <section className="rally-section box">
+                        <h2>RALLY</h2>
+                        <p>
+                            Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
+                        </p>
+                    </section>
+                )}
+                <div style={{ marginTop: 24, textAlign: 'center' }}>
+                    <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                        Complete Character
+                    </button>
+                    {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
+                </div>
             </div>
+            {/* Mobile Bottom Navigation */}
+            {mobile && (
+                <nav className="mobile-nav">
+                    {SECTIONS.map(section => (
+                        <button
+                            key={section.key}
+                            className={activeSection === section.key ? 'active' : ''}
+                            onClick={() => setActiveSection(section.key)}
+                            aria-label={section.label}
+                        >
+                            {section.icon}
+                            <span className="nav-label">{section.label}</span>
+                        </button>
+                    ))}
+                    {/* Rally icon for Bard */}
+                    {currentCharacter?.characterClass === 'Bard' && (
+                        <button
+                            key="rally"
+                            className={activeSection === 'rally' ? 'active' : ''}
+                            onClick={() => setActiveSection('rally')}
+                            aria-label="Rally"
+                        >
+                            <FaMusic />
+                            <span className="nav-label">Rally</span>
+                        </button>
+                    )}
+                </nav>
+            )}
         </>
     );
 };

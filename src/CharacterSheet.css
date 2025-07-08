@@ -1,8 +1,8 @@
 .character-sheet-container {
     font-family: 'Inter', sans-serif;
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 6px auto 20px auto;
+    padding: 6px 20px 20px 20px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -68,7 +68,6 @@ h3 {
     border-radius: 5px;
     font-size: 1em;
     box-sizing: border-box;
-    min-width: 150px;
 }
 
 .main-layout {
@@ -81,7 +80,6 @@ h3 {
 .traits-section,
 .health-section {
     flex: 1;
-    min-width: 450px;
 }
 
 .trait-row {
@@ -200,7 +198,6 @@ h3 {
 
 .flex-half {
     flex: 1;
-    min-width: 450px;
     display: flex;
     flex-direction: column;
 }
@@ -316,18 +313,158 @@ h3 {
     border-color: #8e44ad;
 }
 
-@media (max-width: 960px) {
+:root {
+    --color-bg: #181a1b;
+    --color-bg-box: #23272a;
+    --color-text: #f3f3f3;
+    --color-accent: #4CAF50;
+    --color-accent2: #3498db;
+    --color-border: #333;
+    --color-nav-bg: #23272a;
+    --color-nav-active: #4CAF50;
+    --color-nav-inactive: #888;
+}
+
+body,
+.character-sheet-container {
+    background-color: var(--color-bg) !important;
+    color: var(--color-text) !important;
+}
+
+.character-sheet-container {
+    background-color: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+}
+
+.box {
+    background-color: var(--color-bg-box);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+h1,
+h2,
+h3,
+label,
+.trait-name {
+    color: var(--color-text);
+}
+
+input,
+select,
+textarea {
+    background-color: #222;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid var(--color-accent2);
+}
+
+button {
+    background-color: var(--color-accent);
+    color: #fff;
+    border: none;
+}
+
+button:hover,
+button.active {
+    background-color: var(--color-accent2);
+}
+
+/* Mobile Bottom Navigation */
+.mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: var(--color-nav-bg);
+    border-top: 1.5px solid var(--color-border);
+    padding: 0.5rem 0 0.25rem 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.mobile-nav button {
+    background: none;
+    border: none;
+    color: var(--color-nav-inactive);
+    display: inline-block;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2em;
+    padding: 0.2em 0.3em 0.1em 0.3em;
+    min-width: 100px;
+    max-width: 120px;
+    text-align: center;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+}
+
+.mobile-nav button.active,
+.mobile-nav button:focus {
+    color: var(--color-nav-active);
+}
+
+.mobile-nav .nav-label {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 0.1em;
+    font-size: 0.7em;
+    letter-spacing: 0.01em;
+    color: inherit;
+}
+
+@media (max-width: 700px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .character-sheet-container,
+    .box {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        box-sizing: border-box;
+    }
 
     .main-layout,
     .layout-row {
-        flex-direction: column;
-        align-items: center;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
-    .traits-section,
-    .health-section,
-    .flex-half {
-        min-width: 90%;
+    .input-group input[type="text"],
+    .input-group input[type="number"],
+    .input-group select,
+    textarea,
+    button,
+    select {
+        width: 100% !important;
+        box-sizing: border-box;
     }
 }
 
@@ -357,7 +494,6 @@ h3 {
     .input-group input[type="text"],
     .input-group input[type="number"] {
         width: 100%;
-        min-width: unset;
     }
 
     .trait-row {
