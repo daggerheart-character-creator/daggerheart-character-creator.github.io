@@ -153,36 +153,6 @@ const CharacterSheet: React.FC = () => {
         }
     }, [currentCharacter, lastClass]);
 
-    // Handler to apply class suggestions
-    const handleApplySuggestions = () => {
-        if (!currentCharacter || !currentCharacter.characterClass) return;
-        const suggestions = CLASS_SUGGESTIONS[currentCharacter.characterClass as CharacterClass];
-        if (!suggestions) return;
-        updateCharacterField('agility', suggestions.traits.agility ?? currentCharacter.agility);
-        updateCharacterField('strength', suggestions.traits.strength ?? currentCharacter.strength);
-        updateCharacterField('finesse', suggestions.traits.finesse ?? currentCharacter.finesse);
-        updateCharacterField('instinct', suggestions.traits.instinct ?? currentCharacter.instinct);
-        updateCharacterField('presence', suggestions.traits.presence ?? currentCharacter.presence);
-        updateCharacterField('knowledge', suggestions.traits.knowledge ?? currentCharacter.knowledge);
-        // Pre-fill weapon (first weapon slot)
-        if (suggestions.weapon) {
-            handleWeaponChange(0, 'name', suggestions.weapon);
-        }
-        // Pre-fill inventory
-        if (suggestions.inventory) {
-            updateCharacterField('inventory', suggestions.inventory);
-        }
-        // Also update traitAssignment state for TraitsSection
-        setTraitAssignment({
-            agility: (suggestions.traits.agility ?? currentCharacter.agility) as TraitValue,
-            strength: (suggestions.traits.strength ?? currentCharacter.strength) as TraitValue,
-            finesse: (suggestions.traits.finesse ?? currentCharacter.finesse) as TraitValue,
-            instinct: (suggestions.traits.instinct ?? currentCharacter.instinct) as TraitValue,
-            presence: (suggestions.traits.presence ?? currentCharacter.presence) as TraitValue,
-            knowledge: (suggestions.traits.knowledge ?? currentCharacter.knowledge) as TraitValue,
-        });
-    };
-
     // Trait assignment state
     const [traitAssignment, setTraitAssignment] = useState<Record<TraitName, TraitValue | null>>({
         agility: null,
@@ -306,18 +276,6 @@ const CharacterSheet: React.FC = () => {
         return true;
     };
 
-    const setTraitAssignmentToCharacter = () => {
-        if (!currentCharacter) return;
-        setTraitAssignment({
-            agility: currentCharacter.agility as TraitValue,
-            strength: currentCharacter.strength as TraitValue,
-            finesse: currentCharacter.finesse as TraitValue,
-            instinct: currentCharacter.instinct as TraitValue,
-            presence: currentCharacter.presence as TraitValue,
-            knowledge: currentCharacter.knowledge as TraitValue,
-        });
-    };
-
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
@@ -337,18 +295,21 @@ const CharacterSheet: React.FC = () => {
                         </div>
                     )}
                 </div>
-                <div className="character-controls box">
-                    <label htmlFor="character-select">Select Character:</label>
-                    <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                        {characterList.map(char => (
-                            <option key={char.id} value={char.id}>
-                                {char.name || 'Unnamed Character'}
-                            </option>
-                        ))}
-                    </select>
-                    <button onClick={handleNewCharacter}>New Character</button>
-                    <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
-                </div>
+                {/* Only show character controls in Info section */}
+                {showSection('info') && (
+                    <div className="character-controls box">
+                        <label htmlFor="character-select">Select Character:</label>
+                        <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
+                            {characterList.map(char => (
+                                <option key={char.id} value={char.id}>
+                                    {char.name || 'Unnamed Character'}
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={handleNewCharacter}>New Character</button>
+                        <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
+                    </div>
+                )}
 
                 {/* Info Section */}
                 {showSection('info') && (
@@ -356,9 +317,7 @@ const CharacterSheet: React.FC = () => {
                         currentCharacter={currentCharacter}
                         updateCharacterField={updateCharacterField}
                         subclassOptions={subclassOptions}
-                        handleApplySuggestions={handleApplySuggestions}
                         CLASS_OPTIONS={CLASS_OPTIONS}
-                        CLASS_SUGGESTIONS={CLASS_SUGGESTIONS}
                         ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
                         COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
                     />
@@ -367,21 +326,16 @@ const CharacterSheet: React.FC = () => {
                 {/* Traits Section */}
                 {showSection('traits') && (
                     <TraitsSection
-                        currentCharacter={currentCharacter}
                         traitAssignment={traitAssignment}
                         traitIssues={traitIssues}
                         isValidTraitAssignment={isValidTraitAssignment}
                         remainingTraitValues={remainingTraitValues}
-                        TRAIT_NAMES={TRAIT_NAMES}
                         getAvailableValues={getAvailableValues}
                         handleTraitChange={handleTraitChange}
                         applyTraitAssignment={applyTraitAssignment}
                         resetTraitAssignment={resetTraitAssignment}
                         showTraitHelp={showTraitHelp}
                         setShowTraitHelp={setShowTraitHelp}
-                        updateCharacterField={updateCharacterField}
-                        handleApplySuggestions={handleApplySuggestions}
-                        setTraitAssignment={setTraitAssignment}
                     />
                 )}
 

@@ -1,7 +1,7 @@
 import React from 'react';
+import { FaBook, FaBoxOpen, FaDna, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import type { DaggerheartCharacter } from '../types/characterTypes';
-import type { TraitValue, TraitName } from '../types/traits';
-import { FaUser, FaDna, FaHeartbeat, FaShieldAlt, FaBook, FaStar, FaBoxOpen, FaMusic } from 'react-icons/fa';
+import type { TraitName } from '../types/traits';
 
 export const CLASS_OPTIONS = [
     'Bard',

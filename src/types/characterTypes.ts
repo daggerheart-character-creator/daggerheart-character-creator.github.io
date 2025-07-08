@@ -19,6 +19,28 @@ export interface TraitUpgrades {
     knowledge: boolean;
 }
 
+export interface SubclassDetail {
+    name: string;
+    description: string;
+    spellcastTrait?: string;
+    foundationFeature: { name: string; description: string };
+    specializationFeature: { name: string; description: string };
+    masteryFeature: { name: string; description: string };
+}
+
+export interface AncestryDetail {
+    name: string;
+    description: string;
+    feature1: { name: string; description: string };
+    feature2: { name: string; description: string };
+}
+
+export interface CommunityDetail {
+    name: string;
+    description: string;
+    feature: { name: string; description: string };
+}
+
 export interface DaggerheartCharacter {
     id: string;
     name: string;

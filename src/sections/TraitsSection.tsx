@@ -7,42 +7,32 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import type { DaggerheartCharacter, TraitName, TraitValue } from '../CharacterSheet';
+import type { TraitName, TraitValue } from '../types/traits';
 
 interface TraitsSectionProps {
-    currentCharacter: DaggerheartCharacter;
     traitAssignment: Record<TraitName, TraitValue | null>;
     traitIssues: Record<TraitName, 'duplicate' | 'unassigned' | null>;
     isValidTraitAssignment: boolean;
     remainingTraitValues: TraitValue[];
-    TRAIT_NAMES: readonly TraitName[];
     getAvailableValues: (trait: TraitName) => TraitValue[];
     handleTraitChange: (trait: TraitName, value: TraitValue | '') => void;
     applyTraitAssignment: () => void;
     resetTraitAssignment: () => void;
     showTraitHelp: boolean;
     setShowTraitHelp: (show: boolean) => void;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
-    handleApplySuggestions?: () => void;
-    setTraitAssignment: React.Dispatch<React.SetStateAction<Record<TraitName, TraitValue | null>>>;
 }
 
 const TraitsSection: React.FC<TraitsSectionProps> = ({
-    currentCharacter,
     traitAssignment,
     traitIssues,
     isValidTraitAssignment,
     remainingTraitValues,
-    TRAIT_NAMES,
     getAvailableValues,
     handleTraitChange,
     applyTraitAssignment,
     resetTraitAssignment,
     showTraitHelp,
     setShowTraitHelp,
-    updateCharacterField,
-    handleApplySuggestions,
-    setTraitAssignment,
 }) => (
     <Paper elevation={2} sx={{ py: 2, px: 2, mb: 2, width: '100%' }}>
         <Typography variant="h5" gutterBottom>TRAITS</Typography>
