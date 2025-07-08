@@ -345,6 +345,7 @@ const CharacterSheet: React.FC = () => {
                         currentCharacter={currentCharacter}
                         calculateThreshold={calculateThreshold}
                         toggleCircles={toggleCircles}
+                        updateCharacterField={updateCharacterField as (field: keyof DaggerheartCharacter, value: any) => void}
                     />
                 )}
 

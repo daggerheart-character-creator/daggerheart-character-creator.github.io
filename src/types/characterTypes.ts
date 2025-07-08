@@ -10,6 +10,13 @@ export interface Armor {
     feature: string;
 }
 
+export interface ArmorOption {
+    name: string;
+    baseThresholds: string;
+    baseScore: number;
+    feature: string;
+}
+
 export interface TraitUpgrades {
     agility: boolean;
     strength: boolean;
