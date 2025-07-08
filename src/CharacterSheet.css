@@ -2,7 +2,7 @@
     font-family: 'Inter', sans-serif;
     max-width: 1200px;
     margin: 6px auto 20px auto;
-    padding: 6px 20px 20px 20px;
+    padding: 12px 12px 20px 12px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -524,4 +524,8 @@ button.active {
     .character-controls button {
         max-width: 100%;
     }
+}
+
+.complete-character-btn-container {
+    margin-bottom: 80px;
 }

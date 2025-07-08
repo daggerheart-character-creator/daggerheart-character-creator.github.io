@@ -1,6 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaBook, FaBoxOpen, FaDna, FaHeartbeat, FaMusic, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
+import { FaMusic } from 'react-icons/fa';
 import './CharacterSheet.css';
+import type { CharacterClass } from './constants/characterOptions';
+import {
+    ANCESTRY_OPTIONS,
+    CLASS_OPTIONS,
+    CLASS_SUGGESTIONS,
+    COMMUNITY_OPTIONS,
+    SECTIONS,
+    SUBCLASS_OPTIONS
+} from './constants/characterOptions';
 import ExperiencesSection from './sections/ExperiencesSection';
 import FeaturesDomainsSection from './sections/FeaturesDomainsSection';
 import HealthSection from './sections/HealthSection';
@@ -8,205 +17,10 @@ import InfoSection from './sections/InfoSection';
 import InventorySection from './sections/InventorySection';
 import TraitsSection from './sections/TraitsSection';
 import WeaponsArmorSection from './sections/WeaponsArmorSection';
-
-// TypeScript types for character state
-export interface Weapon {
-    name: string;
-    traitRange: string;
-    damageDiceType: string;
-    feature: string;
-}
-
-export interface Armor {
-    name: string;
-    feature: string;
-}
-
-export interface TraitUpgrades {
-    agility: boolean;
-    strength: boolean;
-    finesse: boolean;
-    instinct: boolean;
-    presence: boolean;
-    knowledge: boolean;
-}
-
-export interface DaggerheartCharacter {
-    id: string;
-    name: string;
-    pronouns: string;
-    characterClass: string;
-    heritage: string;
-    community: string;
-    subclass: string;
-    level: number;
-    hp: boolean[];
-    stress: boolean[];
-    hope: boolean[];
-    proficiency: boolean[];
-    agility: number;
-    strength: number;
-    finesse: number;
-    instinct: number;
-    presence: number;
-    knowledge: number;
-    evasion: number;
-    gold: string;
-    inventory: string;
-    experiences: string;
-    classFeatures: string;
-    domainCards: string;
-    activeWeapons: Weapon[];
-    activeArmor: Armor[];
-    traitUpgrades: TraitUpgrades;
-}
-
-const generateId = () => crypto.randomUUID();
-
-const createNewCharacter = (): DaggerheartCharacter => ({
-    id: generateId(),
-    name: 'New Character',
-    pronouns: '',
-    characterClass: '',
-    heritage: '',
-    community: '',
-    subclass: '',
-    level: 1,
-    hp: Array(10).fill(false),
-    stress: Array(8).fill(false),
-    hope: Array(8).fill(false),
-    proficiency: Array(5).fill(false),
-    agility: 0,
-    strength: 0,
-    finesse: 0,
-    instinct: 0,
-    presence: 0,
-    knowledge: 0,
-    evasion: 10,
-    gold: '',
-    inventory: '',
-    experiences: '',
-    classFeatures: '',
-    domainCards: '',
-    activeWeapons: [
-        { name: '', traitRange: '', damageDiceType: '', feature: '' },
-        { name: '', traitRange: '', damageDiceType: '', feature: '' }
-    ],
-    activeArmor: [
-        { name: '', feature: '' }
-    ],
-    traitUpgrades: {
-        agility: false,
-        strength: false,
-        finesse: false,
-        instinct: false,
-        presence: false,
-        knowledge: false,
-    },
-});
-
-// List of available classes
-const CLASS_OPTIONS = [
-    'Bard',
-    'Druid',
-    'Ranger',
-    'Rogue',
-    'Sorcerer',
-    'Wizard',
-    'Guardian',
-    'Seraph',
-    'Warrior',
-] as const;
-
-type CharacterClass = typeof CLASS_OPTIONS[number];
-
-// Suggested traits and weapons for each class
-const CLASS_SUGGESTIONS: Record<CharacterClass, {
-    traits: Partial<Pick<DaggerheartCharacter, 'agility' | 'strength' | 'finesse' | 'instinct' | 'presence' | 'knowledge'>>,
-    weapon: string,
-    inventory: string,
-}> = {
-    Bard: {
-        traits: { agility: 0, strength: -1, finesse: 1, instinct: 0, presence: 2, knowledge: 1 },
-        weapon: 'Rapier - Presence Melee - d8 phy - One-Handed',
-        inventory: 'torch, 50 feet of rope, basic supplies, handful of gold',
-    },
-    Druid: {
-        traits: { agility: 1, strength: 0, finesse: 1, instinct: 2, presence: -1, knowledge: 0 },
-        weapon: 'Shortstaff - Instinct Close - d8+1 mag - One-Handed',
-        inventory: 'torch, 50 feet of rope, basic supplies, handful of gold',
-    },
-    Ranger: {
-        traits: {}, weapon: '', inventory: ''
-    },
-    Rogue: {
-        traits: {}, weapon: '', inventory: ''
-    },
-    Sorcerer: {
-        traits: {}, weapon: '', inventory: ''
-    },
-    Wizard: {
-        traits: {}, weapon: '', inventory: ''
-    },
-    Guardian: {
-        traits: { agility: 1, strength: 2, finesse: -1, instinct: 0, presence: 1, knowledge: 0 },
-        weapon: 'Battleaxe - Strength Melee - d10+3 phy - Two-Handed',
-        inventory: '',
-    },
-    Seraph: {
-        traits: {}, weapon: '', inventory: ''
-    },
-    Warrior: {
-        traits: {}, weapon: '', inventory: ''
-    },
-};
-
-// Subclass options by class
-const SUBCLASS_OPTIONS: Record<CharacterClass, string[]> = {
-    Bard: ['Troubadour', 'Wordsmith'],
-    Druid: ['Warden of the Elements', 'Warden of Renewal'],
-    Guardian: ['Stalwart', 'Vengeance'],
-    Ranger: ['Beastbound', 'Wayfinder'],
-    Rogue: ['Nightwalker', 'Syndicate'],
-    Seraph: ['Divine Wielder', 'Winged Sentinel'],
-    Sorcerer: ['Elemental Origin', 'Primal Origin'],
-    Warrior: ['Call of the Brave', 'Call of the Slayer'],
-    Wizard: ['School of Knowledge', 'School of War'],
-};
-
-const ANCESTRY_OPTIONS = [
-    'Clank', 'Firbolg', 'Human', 'Drakona', 'Fungril', 'Infernis', 'Dwarf', 'Galapa', 'Katari',
-    'Elf', 'Giant', 'Orc', 'Faerie', 'Goblin', 'Ribbet', 'Faun', 'Halfling', 'Simiah',
-] as const;
-
-const COMMUNITY_OPTIONS = [
-    'Highborne', 'Ridgeborne', 'Underborne', 'Loreborne', 'Seaborne', 'Wanderborne', 'Orderborne', 'Slyborne', 'Wildborne',
-] as const;
-
-// Trait assignment options
-const TRAIT_VALUES = [-1, 0, 0, 1, 1, 2] as const;
-export type TraitValue = typeof TRAIT_VALUES[number];
-const TRAIT_NAMES = [
-    'agility',
-    'strength',
-    'finesse',
-    'instinct',
-    'presence',
-    'knowledge',
-] as const;
-export type TraitName = typeof TRAIT_NAMES[number];
-
-// Section keys and labels/icons
-const SECTIONS = [
-    { key: 'info', label: 'Info', icon: <FaUser /> },
-    { key: 'traits', label: 'Traits', icon: <FaDna /> },
-    { key: 'health', label: 'Health', icon: <FaHeartbeat /> },
-    { key: 'weapons', label: 'Weapons', icon: <FaShieldAlt /> },
-    { key: 'experiences', label: 'Experiences', icon: <FaBook /> },
-    { key: 'features', label: 'Features', icon: <FaStar /> },
-    { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
-    // Rally only for Bard
-];
+import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
+import type { TraitName, TraitValue } from './types/traits';
+import { TRAIT_NAMES, TRAIT_VALUES } from './types/traits';
+import { createNewCharacter } from './utils/characterUtils';
 
 const isMobile = () => window.innerWidth <= 700;
 
@@ -358,6 +172,15 @@ const CharacterSheet: React.FC = () => {
         if (suggestions.inventory) {
             updateCharacterField('inventory', suggestions.inventory);
         }
+        // Also update traitAssignment state for TraitsSection
+        setTraitAssignment({
+            agility: (suggestions.traits.agility ?? currentCharacter.agility) as TraitValue,
+            strength: (suggestions.traits.strength ?? currentCharacter.strength) as TraitValue,
+            finesse: (suggestions.traits.finesse ?? currentCharacter.finesse) as TraitValue,
+            instinct: (suggestions.traits.instinct ?? currentCharacter.instinct) as TraitValue,
+            presence: (suggestions.traits.presence ?? currentCharacter.presence) as TraitValue,
+            knowledge: (suggestions.traits.knowledge ?? currentCharacter.knowledge) as TraitValue,
+        });
     };
 
     // Trait assignment state
@@ -483,6 +306,18 @@ const CharacterSheet: React.FC = () => {
         return true;
     };
 
+    const setTraitAssignmentToCharacter = () => {
+        if (!currentCharacter) return;
+        setTraitAssignment({
+            agility: currentCharacter.agility as TraitValue,
+            strength: currentCharacter.strength as TraitValue,
+            finesse: currentCharacter.finesse as TraitValue,
+            instinct: currentCharacter.instinct as TraitValue,
+            presence: currentCharacter.presence as TraitValue,
+            knowledge: currentCharacter.knowledge as TraitValue,
+        });
+    };
+
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
@@ -545,6 +380,8 @@ const CharacterSheet: React.FC = () => {
                         showTraitHelp={showTraitHelp}
                         setShowTraitHelp={setShowTraitHelp}
                         updateCharacterField={updateCharacterField}
+                        handleApplySuggestions={handleApplySuggestions}
+                        setTraitAssignment={setTraitAssignment}
                     />
                 )}
 
@@ -599,7 +436,7 @@ const CharacterSheet: React.FC = () => {
                         </p>
                     </section>
                 )}
-                <div style={{ marginTop: 24, textAlign: 'center' }}>
+                <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
                     <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
                         Complete Character
                     </button>

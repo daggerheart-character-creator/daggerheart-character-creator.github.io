@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import type { Armor, Weapon } from '../CharacterSheet';
+import type { Armor, Weapon } from '../types/characterTypes';
 
 interface WeaponsArmorSectionProps {
     currentCharacter: any;

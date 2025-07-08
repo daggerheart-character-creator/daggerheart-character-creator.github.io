@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -113,12 +112,6 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 variant="outlined"
                 inputProps={{ min: 0 }}
             />
-            {currentCharacter.characterClass && CLASS_SUGGESTIONS[currentCharacter.characterClass] && (
-                <Button variant="contained" color="primary" onClick={handleApplySuggestions}
-                    sx={{ alignSelf: 'flex-start' }}>
-                    Apply {currentCharacter.characterClass} Suggestions
-                </Button>
-            )}
         </Stack>
     </Paper>
 );
