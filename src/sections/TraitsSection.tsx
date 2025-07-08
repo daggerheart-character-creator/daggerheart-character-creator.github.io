@@ -82,7 +82,10 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
                         <FormControl size="small">
                             <Select
                                 value={traitAssignment[trait] !== null ? String(traitAssignment[trait]) : ''}
-                                onChange={e => handleTraitChange(trait, e.target.value === '' ? '' : Number(e.target.value))}
+                                onChange={e => {
+                                    const val = e.target.value === '' ? '' : Number(e.target.value);
+                                    handleTraitChange(trait, val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
+                                }}
                                 displayEmpty
                             >
                                 <MenuItem value="">--</MenuItem>

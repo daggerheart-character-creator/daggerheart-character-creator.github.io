@@ -178,16 +178,14 @@ const ANCESTRY_OPTIONS = [
     'Clank', 'Firbolg', 'Human', 'Drakona', 'Fungril', 'Infernis', 'Dwarf', 'Galapa', 'Katari',
     'Elf', 'Giant', 'Orc', 'Faerie', 'Goblin', 'Ribbet', 'Faun', 'Halfling', 'Simiah',
 ] as const;
-type Ancestry = typeof ANCESTRY_OPTIONS[number];
 
 const COMMUNITY_OPTIONS = [
     'Highborne', 'Ridgeborne', 'Underborne', 'Loreborne', 'Seaborne', 'Wanderborne', 'Orderborne', 'Slyborne', 'Wildborne',
 ] as const;
-type Community = typeof COMMUNITY_OPTIONS[number];
 
 // Trait assignment options
 const TRAIT_VALUES = [-1, 0, 0, 1, 1, 2] as const;
-type TraitValue = typeof TRAIT_VALUES[number];
+export type TraitValue = typeof TRAIT_VALUES[number];
 const TRAIT_NAMES = [
     'agility',
     'strength',
@@ -196,7 +194,7 @@ const TRAIT_NAMES = [
     'presence',
     'knowledge',
 ] as const;
-type TraitName = typeof TRAIT_NAMES[number];
+export type TraitName = typeof TRAIT_NAMES[number];
 
 // Section keys and labels/icons
 const SECTIONS = [
@@ -264,22 +262,6 @@ const CharacterSheet: React.FC = () => {
                         [resourceType]: char[resourceType].map((val: boolean, i: number) =>
                             i === index ? !val : val
                         )
-                    }
-                    : char
-            )
-        );
-    }, [currentCharacterId]);
-
-    const toggleTraitUpgrade = useCallback((traitField: keyof TraitUpgrades) => {
-        setCharacterList(prevList =>
-            prevList.map(char =>
-                char.id === currentCharacterId
-                    ? {
-                        ...char,
-                        traitUpgrades: {
-                            ...char.traitUpgrades,
-                            [traitField]: !char.traitUpgrades[traitField]
-                        }
                     }
                     : char
             )
@@ -493,10 +475,6 @@ const CharacterSheet: React.FC = () => {
         }
         setCreationError(null);
         setIsCreationMode(false);
-    };
-
-    const handleEditCharacter = () => {
-        setIsCreationMode(true);
     };
 
     // Helper to show/hide sections
