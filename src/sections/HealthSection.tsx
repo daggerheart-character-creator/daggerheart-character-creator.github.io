@@ -47,14 +47,28 @@ const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calcula
         updateCharacterField('hp', newHp);
     };
 
+    // Get selected armor thresholds
+    let minorBase = 10, majorBase = 15, severeBase = 20, armorLabel = '';
+    const selectedArmor = currentCharacter.activeArmor && currentCharacter.activeArmor[0]?.name
+        ? ARMOR_OPTIONS.find(a => a.name === currentCharacter.activeArmor[0].name)
+        : null;
+    if (selectedArmor && selectedArmor.baseThresholds) {
+        // baseThresholds is like '5 / 11' or '7 / 15' or '8 / 17'
+        // We'll use the first number for Minor, second for Major, and Severe = Major + 5
+        const [minor, major] = selectedArmor.baseThresholds.split('/').map(s => parseInt(s.trim(), 10));
+        if (!isNaN(minor)) minorBase = minor;
+        if (!isNaN(major)) majorBase = major;
+        severeBase = !isNaN(major) ? major + 5 : 20;
+        armorLabel = selectedArmor.name;
+    }
     return (
         <Paper elevation={2} sx={{ p: 2, mb: 2, width: '100%' }}>
             <Typography variant="h5" gutterBottom>DAMAGE & HEALTH</Typography>
             <Box className="thresholds" sx={{ mb: 2 }}>
-                <Typography variant="subtitle1">DAMAGE THRESHOLDS (Add your level)</Typography>
-                <Typography>MINOR: {calculateThreshold(10)} (Mark 1 HP)</Typography>
-                <Typography>MAJOR: {calculateThreshold(15)} (Mark 2 HP)</Typography>
-                <Typography>SEVERE: {calculateThreshold(20)} (Mark 3 HP)</Typography>
+                <Typography variant="subtitle1">DAMAGE THRESHOLDS (Add your level){armorLabel && ` (Armor: ${armorLabel})`}</Typography>
+                <Typography>MINOR: {calculateThreshold(minorBase)} (Mark 1 HP)</Typography>
+                <Typography>MAJOR: {calculateThreshold(majorBase)} (Mark 2 HP)</Typography>
+                <Typography>SEVERE: {calculateThreshold(severeBase)} (Mark 3 HP)</Typography>
             </Box>
             <Box className="resource-tracker">
                 {currentCharacter.hp.length > 0 && (
