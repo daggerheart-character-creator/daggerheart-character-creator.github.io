@@ -10,6 +10,7 @@ import {
     SECTIONS,
     SUBCLASS_OPTIONS
 } from './constants/characterOptions';
+import { CLASS_DETAILS } from './constants/classDetails';
 import ExperiencesSection from './sections/ExperiencesSection';
 import FeaturesDomainsSection from './sections/FeaturesDomainsSection';
 import HealthSection from './sections/HealthSection';
@@ -19,7 +20,7 @@ import TraitsSection from './sections/TraitsSection';
 import WeaponsArmorSection from './sections/WeaponsArmorSection';
 import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
 import type { TraitName, TraitValue } from './types/traits';
-import { TRAIT_NAMES, TRAIT_VALUES } from './types/traits';
+import { TRAIT_VALUES } from './types/traits';
 import { createNewCharacter } from './utils/characterUtils';
 
 const isMobile = () => window.innerWidth <= 700;
@@ -153,7 +154,24 @@ const CharacterSheet: React.FC = () => {
         }
     }, [currentCharacter, lastClass]);
 
-    // Trait assignment state
+    // When class changes, set HP to startingHP for that class
+    React.useEffect(() => {
+        if (!currentCharacter) return;
+        const className = currentCharacter.characterClass;
+        if (!className || !CLASS_DETAILS[className]) {
+            // If no class, set HP to empty
+            if (currentCharacter.hp.length !== 0) {
+                updateCharacterField('hp', []);
+            }
+            return;
+        }
+        const startingHP = CLASS_DETAILS[className].startingHP;
+        if (currentCharacter.hp.length !== startingHP) {
+            updateCharacterField('hp', Array(startingHP).fill(false));
+        }
+    }, [currentCharacter?.characterClass]);
+
+    // Trait assignment state, initialized from currentCharacter
     const [traitAssignment, setTraitAssignment] = useState<Record<TraitName, TraitValue | null>>({
         agility: null,
         strength: null,
@@ -162,6 +180,20 @@ const CharacterSheet: React.FC = () => {
         presence: null,
         knowledge: null,
     });
+
+    // Sync traitAssignment from currentCharacter when it changes
+    React.useEffect(() => {
+        if (currentCharacter) {
+            setTraitAssignment({
+                agility: currentCharacter.agility ?? null,
+                strength: currentCharacter.strength ?? null,
+                finesse: currentCharacter.finesse ?? null,
+                instinct: currentCharacter.instinct ?? null,
+                presence: currentCharacter.presence ?? null,
+                knowledge: currentCharacter.knowledge ?? null,
+            });
+        }
+    }, [currentCharacter]);
 
     // Compute remaining values
     const remainingTraitValues = useMemo(() => {
@@ -180,17 +212,19 @@ const CharacterSheet: React.FC = () => {
 
     // For each trait, get available values (not already assigned elsewhere, except for this trait's current value)
     const getAvailableValues = (trait: TraitName): TraitValue[] => {
-        const assignedElsewhere: TraitValue[] = Object.entries(traitAssignment)
-            .filter(([t, v]) => t !== trait && v !== null)
-            .map(([, v]) => v as TraitValue);
+        // Count how many times each value is used, including the current trait
         const allCounts: Record<TraitValue, number> = { '-1': 1, 0: 2, 1: 2, 2: 1 };
         const usedCounts: Record<TraitValue, number> = { '-1': 0, 0: 0, 1: 0, 2: 0 };
-        assignedElsewhere.forEach(v => { usedCounts[v] = (usedCounts[v] || 0) + 1; });
+        Object.entries(traitAssignment).forEach(([t, v]) => {
+            if (v !== null && t !== trait) {
+                usedCounts[v as TraitValue] = (usedCounts[v as TraitValue] || 0) + 1;
+            }
+        });
         const current = traitAssignment[trait];
+        // Only show values that have not been fully used elsewhere, or the current value for this trait
         return (TRAIT_VALUES as readonly TraitValue[]).filter(val => {
-            // Always allow the current value for this trait
-            const allowed = (usedCounts[val] < allCounts[val]) || (current === val);
-            return allowed;
+            if (current === val) return true;
+            return usedCounts[val] < allCounts[val];
         });
     };
 
@@ -221,15 +255,12 @@ const CharacterSheet: React.FC = () => {
     // Handler for trait value change
     const handleTraitChange = (trait: TraitName, value: TraitValue | '') => {
         setTraitAssignment(prev => ({ ...prev, [trait]: value === '' ? null : value }));
+        if (value !== '') {
+            updateCharacterField(trait, value);
+        }
     };
 
-    // Apply trait assignment to character
-    const applyTraitAssignment = () => {
-        if (!isValidTraitAssignment) return;
-        TRAIT_NAMES.forEach(trait => {
-            updateCharacterField(trait, traitAssignment[trait] as TraitValue);
-        });
-    };
+    // No longer need applyTraitAssignment
 
     // Reset trait assignment
     const resetTraitAssignment = () => {
@@ -328,11 +359,9 @@ const CharacterSheet: React.FC = () => {
                     <TraitsSection
                         traitAssignment={traitAssignment}
                         traitIssues={traitIssues}
-                        isValidTraitAssignment={isValidTraitAssignment}
                         remainingTraitValues={remainingTraitValues}
                         getAvailableValues={getAvailableValues}
                         handleTraitChange={handleTraitChange}
-                        applyTraitAssignment={applyTraitAssignment}
                         resetTraitAssignment={resetTraitAssignment}
                         showTraitHelp={showTraitHelp}
                         setShowTraitHelp={setShowTraitHelp}
@@ -346,6 +375,7 @@ const CharacterSheet: React.FC = () => {
                         calculateThreshold={calculateThreshold}
                         toggleCircles={toggleCircles}
                         updateCharacterField={updateCharacterField as (field: keyof DaggerheartCharacter, value: any) => void}
+                        isCreationMode={isCreationMode}
                     />
                 )}
 

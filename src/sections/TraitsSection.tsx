@@ -12,11 +12,9 @@ import type { TraitName, TraitValue } from '../types/traits';
 interface TraitsSectionProps {
     traitAssignment: Record<TraitName, TraitValue | null>;
     traitIssues: Record<TraitName, 'duplicate' | 'unassigned' | null>;
-    isValidTraitAssignment: boolean;
     remainingTraitValues: TraitValue[];
     getAvailableValues: (trait: TraitName) => TraitValue[];
     handleTraitChange: (trait: TraitName, value: TraitValue | '') => void;
-    applyTraitAssignment: () => void;
     resetTraitAssignment: () => void;
     showTraitHelp: boolean;
     setShowTraitHelp: (show: boolean) => void;
@@ -25,11 +23,9 @@ interface TraitsSectionProps {
 const TraitsSection: React.FC<TraitsSectionProps> = ({
     traitAssignment,
     traitIssues,
-    isValidTraitAssignment,
     remainingTraitValues,
     getAvailableValues,
     handleTraitChange,
-    applyTraitAssignment,
     resetTraitAssignment,
     showTraitHelp,
     setShowTraitHelp,
@@ -54,13 +50,7 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
                 </Box>
             )}
         </Box>
-        <form
-            onSubmit={e => {
-                e.preventDefault();
-                applyTraitAssignment();
-            }}
-            style={{ marginBottom: 16 }}
-        >
+        <Box style={{ marginBottom: 16 }}>
             <Stack spacing={2} direction="column">
                 {/* AGILITY */}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -189,23 +179,15 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
                     {traitIssues['knowledge'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
                 </Box>
             </Stack>
-        </form>
+        </Box>
         <Typography sx={{ mt: 1, fontSize: 14 }}>
             <b>Remaining values:</b> {remainingTraitValues.length === 0 ? 'None' : remainingTraitValues.map(v => v >= 0 ? `+${v}` : v).join(', ')}
         </Typography>
         <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <Button type="submit" variant="contained" color="primary" disabled={!isValidTraitAssignment}>
-                Apply Trait Assignment
-            </Button>
             <Button type="button" variant="outlined" onClick={resetTraitAssignment}>
                 Reset
             </Button>
         </Stack>
-        {!isValidTraitAssignment && (
-            <Typography color="error" sx={{ mt: 1 }}>
-                You must assign −1, 0, 0, +1, +1, +2 across the six traits. No duplicates.
-            </Typography>
-        )}
     </Paper>
 );
 
