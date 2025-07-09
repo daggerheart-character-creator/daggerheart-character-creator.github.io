@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaMusic } from 'react-icons/fa';
 import './CharacterSheet.css';
+import { ARMOR_OPTIONS } from './constants/armor';
 import type { CharacterClass } from './constants/characterOptions';
 import {
     ANCESTRY_OPTIONS,
@@ -11,6 +12,7 @@ import {
     SUBCLASS_OPTIONS
 } from './constants/characterOptions';
 import { CLASS_DETAILS } from './constants/classDetails';
+import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
 import ExperiencesSection from './sections/ExperiencesSection';
 import FeaturesDomainsSection from './sections/FeaturesDomainsSection';
 import HealthSection from './sections/HealthSection';
@@ -163,11 +165,44 @@ const CharacterSheet: React.FC = () => {
             if (currentCharacter.hp.length !== 0) {
                 updateCharacterField('hp', []);
             }
+            // If no class, clear weapon and armor
+            updateCharacterField('activeWeapons', [
+                { name: '', traitRange: '', damageDiceType: '', feature: '' },
+                { name: '', traitRange: '', damageDiceType: '', feature: '' }
+            ]);
+            updateCharacterField('activeArmor', [
+                { name: '', feature: '' }
+            ]);
             return;
         }
         const startingHP = CLASS_DETAILS[className].startingHP;
         if (currentCharacter.hp.length !== startingHP) {
             updateCharacterField('hp', Array(startingHP).fill(false));
+        }
+
+        // Set default weapon
+        const suggestion = CLASS_SUGGESTIONS[className as CharacterClass];
+        if (suggestion && suggestion.weapon) {
+            // Extract weapon name (before ' - ')
+            const weaponName = suggestion.weapon.split(' - ')[0].trim();
+            // Try to find in all weapon lists
+            const allWeapons = [...PRIMARY_WEAPONS, ...MAGIC_WEAPONS, ...SECONDARY_WEAPONS];
+            const weaponObj = allWeapons.find(w => w.name === weaponName);
+            if (weaponObj) {
+                updateCharacterField('activeWeapons', [weaponObj, { name: '', traitRange: '', damageDiceType: '', feature: '' }]);
+            }
+        }
+
+        // Set default armor (by class)
+        let defaultArmor = 'Gambeson Armor';
+        if (className === 'Guardian' || className === 'Warrior') defaultArmor = 'Chainmail Armor';
+        if (className === 'Wizard' || className === 'Sorcerer') defaultArmor = 'Gambeson Armor';
+        if (className === 'Rogue') defaultArmor = 'Leather Armor';
+        if (className === 'Seraph') defaultArmor = 'Chainmail Armor';
+        // You can add more class-specific logic here if needed
+        const armorObj = ARMOR_OPTIONS.find(a => a.name === defaultArmor);
+        if (armorObj) {
+            updateCharacterField('activeArmor', [{ name: armorObj.name, feature: armorObj.feature }]);
         }
     }, [currentCharacter?.characterClass]);
 
