@@ -1,3 +1,5 @@
+import type { DomainCard } from '../constants/domainCards';
+
 export interface Weapon {
     name: string;
     traitRange: string;
@@ -72,7 +74,7 @@ export interface DaggerheartCharacter {
     inventory: string;
     experiences: string;
     classFeatures: string;
-    domainCards: string;
+    domainCards: DomainCard[];
     activeWeapons: Weapon[];
     activeArmor: Armor[];
     traitUpgrades: TraitUpgrades;

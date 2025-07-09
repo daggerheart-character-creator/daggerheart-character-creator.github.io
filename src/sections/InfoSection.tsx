@@ -68,15 +68,33 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 {/* Class Details Card */}
                 {classDetail && (
                     <Paper elevation={3} sx={{ p: 2, background: '#f8f9fa', mb: 2 }}>
-                        <Typography variant="h6" gutterBottom>{classDetail.name}</Typography>
-                        <Typography variant="subtitle1" gutterBottom><b>Domains:</b> {classDetail.domains.join(' & ')}</Typography>
-                        <Typography variant="body2" gutterBottom>{classDetail.description}</Typography>
+                        <Typography variant="h6" gutterBottom>{classDetail.name || 'Unknown Class'}</Typography>
+                        <Typography variant="subtitle1" gutterBottom><b>Domains:</b> {classDetail.domains?.join(' & ') || 'Unknown'}</Typography>
+                        <Typography variant="body2" gutterBottom>{classDetail.description || 'No description available.'}</Typography>
                         <Stack direction="row" spacing={2} sx={{ mt: 1, mb: 1 }}>
-                            <Typography variant="body2"><b>Evasion:</b> {classDetail.startingEvasion}</Typography>
-                            <Typography variant="body2"><b>HP:</b> {classDetail.startingHP}</Typography>
+                            <Typography variant="body2"><b>Evasion:</b> {classDetail.startingEvasion || 'Unknown'}</Typography>
+                            <Typography variant="body2"><b>HP:</b> {classDetail.startingHP || 'Unknown'}</Typography>
                         </Stack>
-                        <Typography variant="body2" gutterBottom><b>Class Feature:</b> <i>{classDetail.classFeature.name}</i> — {classDetail.classFeature.description}</Typography>
-                        <Typography variant="body2" gutterBottom><b>Hope Feature:</b> <i>{classDetail.hopeFeature.name}</i> — {classDetail.hopeFeature.description}</Typography>
+                        {/* Class Features (can be multiple) */}
+                        {classDetail.classFeatures && classDetail.classFeatures.length > 0 && (
+                            <>
+                                <Typography variant="body2" gutterBottom>
+                                    <b>Class Feature{classDetail.classFeatures.length > 1 ? 's' : ''}:</b>
+                                </Typography>
+                                <ul style={{ marginTop: 0, marginBottom: 8, paddingLeft: 20 }}>
+                                    {classDetail.classFeatures.map((feature, idx) => (
+                                        <li key={idx}>
+                                            <i>{feature?.name || 'Unknown Feature'}</i> — {feature?.description || 'No description available.'}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                        {classDetail.hopeFeature && (
+                            <Typography variant="body2" gutterBottom>
+                                <b>Hope Feature:</b> <i>{classDetail.hopeFeature.name || 'Unknown'}</i> — {classDetail.hopeFeature.description || 'No description available.'}
+                            </Typography>
+                        )}
                     </Paper>
                 )}
                 <FormControl fullWidth disabled={!currentCharacter.characterClass}>
@@ -101,14 +119,26 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             const subclassDetail: SubclassDetail = SUBCLASS_DETAILS[currentCharacter.characterClass][currentCharacter.subclass];
                             return (
                                 <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
-                                    <Typography variant="h6" gutterBottom>{subclassDetail.name}</Typography>
-                                    <Typography variant="body2" gutterBottom>{subclassDetail.description}</Typography>
+                                    <Typography variant="h6" gutterBottom>{subclassDetail.name || 'Unknown Subclass'}</Typography>
+                                    <Typography variant="body2" gutterBottom>{subclassDetail.description || 'No description available.'}</Typography>
                                     {subclassDetail.spellcastTrait && (
                                         <Typography variant="subtitle2" gutterBottom><b>Spellcast Trait:</b> {subclassDetail.spellcastTrait}</Typography>
                                     )}
-                                    <Typography variant="body2" gutterBottom><b>Foundation Feature:</b> <i>{subclassDetail.foundationFeature.name}</i> — {subclassDetail.foundationFeature.description}</Typography>
-                                    <Typography variant="body2" gutterBottom><b>Specialization Feature:</b> <i>{subclassDetail.specializationFeature.name}</i> — {subclassDetail.specializationFeature.description}</Typography>
-                                    <Typography variant="body2" gutterBottom><b>Mastery Feature:</b> <i>{subclassDetail.masteryFeature.name}</i> — {subclassDetail.masteryFeature.description}</Typography>
+                                    {subclassDetail.foundationFeature && (
+                                        <Typography variant="body2" gutterBottom>
+                                            <b>Foundation Feature:</b> <i>{subclassDetail.foundationFeature.name || 'Unknown'}</i> — {subclassDetail.foundationFeature.description || 'No description available.'}
+                                        </Typography>
+                                    )}
+                                    {subclassDetail.specializationFeature && (
+                                        <Typography variant="body2" gutterBottom>
+                                            <b>Specialization Feature:</b> <i>{subclassDetail.specializationFeature.name || 'Unknown'}</i> — {subclassDetail.specializationFeature.description || 'No description available.'}
+                                        </Typography>
+                                    )}
+                                    {subclassDetail.masteryFeature && (
+                                        <Typography variant="body2" gutterBottom>
+                                            <b>Mastery Feature:</b> <i>{subclassDetail.masteryFeature.name || 'Unknown'}</i> — {subclassDetail.masteryFeature.description || 'No description available.'}
+                                        </Typography>
+                                    )}
                                 </Paper>
                             );
                         })()
@@ -133,10 +163,18 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.heritage];
                         return (
                             <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
-                                <Typography variant="h6" gutterBottom>{ancestryDetail.name}</Typography>
-                                <Typography variant="body2" gutterBottom>{ancestryDetail.description}</Typography>
-                                <Typography variant="body2" gutterBottom><b>Feature:</b> <i>{ancestryDetail.feature1.name}</i> — {ancestryDetail.feature1.description}</Typography>
-                                <Typography variant="body2" gutterBottom><b>Feature:</b> <i>{ancestryDetail.feature2.name}</i> — {ancestryDetail.feature2.description}</Typography>
+                                <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
+                                <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
+                                {ancestryDetail.feature1 && (
+                                    <Typography variant="body2" gutterBottom>
+                                        <b>Feature:</b> <i>{ancestryDetail.feature1.name || 'Unknown'}</i> — {ancestryDetail.feature1.description || 'No description available.'}
+                                    </Typography>
+                                )}
+                                {ancestryDetail.feature2 && (
+                                    <Typography variant="body2" gutterBottom>
+                                        <b>Feature:</b> <i>{ancestryDetail.feature2.name || 'Unknown'}</i> — {ancestryDetail.feature2.description || 'No description available.'}
+                                    </Typography>
+                                )}
                             </Paper>
                         );
                     })()
@@ -161,9 +199,13 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         const communityDetail: CommunityDetail = COMMUNITY_DETAILS[currentCharacter.community];
                         return (
                             <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
-                                <Typography variant="h6" gutterBottom>{communityDetail.name}</Typography>
-                                <Typography variant="body2" gutterBottom>{communityDetail.description}</Typography>
-                                <Typography variant="body2" gutterBottom><b>Feature:</b> <i>{communityDetail.feature.name}</i> — {communityDetail.feature.description}</Typography>
+                                <Typography variant="h6" gutterBottom>{communityDetail.name || 'Unknown Community'}</Typography>
+                                <Typography variant="body2" gutterBottom>{communityDetail.description || 'No description available.'}</Typography>
+                                {communityDetail.feature && (
+                                    <Typography variant="body2" gutterBottom>
+                                        <b>Feature:</b> <i>{communityDetail.feature.name || 'Unknown'}</i> — {communityDetail.feature.description || 'No description available.'}
+                                    </Typography>
+                                )}
                             </Paper>
                         );
                     })()

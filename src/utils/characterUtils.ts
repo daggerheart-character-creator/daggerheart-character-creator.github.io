@@ -26,7 +26,7 @@ export const createNewCharacter = (): DaggerheartCharacter => ({
     inventory: '',
     experiences: '',
     classFeatures: '',
-    domainCards: '',
+    domainCards: [],
     activeWeapons: [
         { name: '', traitRange: '', damageDiceType: '', feature: '' },
         { name: '', traitRange: '', damageDiceType: '', feature: '' }
