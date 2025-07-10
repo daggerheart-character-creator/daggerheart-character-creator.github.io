@@ -1,4 +1,9 @@
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaBook, FaBoxOpen, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
@@ -16,12 +21,6 @@ import {
 import { CLASS_DETAILS } from './constants/classDetails';
 import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
 import MainContent from './MainContent';
-import DomainCardsSection from './sections/DomainCardsSection';
-import ExperiencesSection from './sections/ExperiencesSection';
-import FeaturesSection from './sections/FeaturesDomainsSection';
-import InventorySection from './sections/InventorySection';
-import TraitsSection from './sections/TraitsSection';
-import WeaponsArmorSection from './sections/WeaponsArmorSection';
 import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
 import type { TraitName, TraitValue } from './types/traits.ts';
 import { TRAIT_VALUES } from './types/traits.ts';
@@ -210,8 +209,17 @@ const CharacterSheet: React.FC = () => {
         );
     }, [currentCharacterId]);
 
-    const handleSelectCharacter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setCurrentCharacterId(e.target.value);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const characterMenuOpen = Boolean(anchorEl);
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+    const handleSelectCharacter = (id: string) => {
+        setCurrentCharacterId(id);
+        setAnchorEl(null);
     };
 
     const handleNewCharacter = () => {
@@ -230,6 +238,21 @@ const CharacterSheet: React.FC = () => {
             setCharacterList(updatedList);
             setCurrentCharacterId(updatedList[0].id);
         }
+    };
+
+    const handleDeleteCharacterFromMenu = (id: string) => {
+        if (characterList.length <= 1) {
+            const newChar = createNewCharacter();
+            setCharacterList([newChar]);
+            setCurrentCharacterId(newChar.id);
+        } else {
+            const updatedList = characterList.filter(char => char.id !== id);
+            setCharacterList(updatedList);
+            if (currentCharacterId === id) {
+                setCurrentCharacterId(updatedList[0].id);
+            }
+        }
+        setAnchorEl(null);
     };
 
     const calculateThreshold = useCallback((base: number) => {
@@ -431,8 +454,9 @@ const CharacterSheet: React.FC = () => {
         setIsCreationMode(false);
     };
 
-    // Toggle between creation and play mode
-    const [mode, setMode] = useState<'creation' | 'play'>('creation');
+    // Determine mode based on completion
+    const isCompleted = !isCreationMode;
+    const mode = isCompleted ? 'play' : 'creation';
 
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
@@ -440,126 +464,94 @@ const CharacterSheet: React.FC = () => {
 
     return (
         <div className="character-sheet-container">
-            <Box sx={{ display: { xs: 'block', md: 'none' }, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200 }}>
-                {mode === 'play' && (
-                    <ResourceTracker
-                        currentCharacter={currentCharacter}
-                        toggleCircles={toggleCircles}
-                    />
-                )}
+            {/* Persistent Character Switcher Bar */}
+            <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, background: '#23272a', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <button
+                        onClick={handleMenuClick}
+                        style={{ background: 'none', border: 'none', color: '#f3f3f3', fontSize: 18, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
+                        aria-label="Switch character"
+                    >
+                        <span style={{ fontWeight: 700, fontSize: 18, marginRight: 6 }}>
+                            {currentCharacter?.name || 'Unnamed Character'}
+                        </span>
+                        <span style={{ fontWeight: 400, fontSize: 15, marginRight: 4, color: '#aaa' }}>
+                            {currentCharacter?.characterClass ? `(${currentCharacter.characterClass})` : ''}
+                        </span>
+                        <ArrowDropDownIcon style={{ color: '#f3f3f3' }} />
+                    </button>
+                    <Menu anchorEl={anchorEl} open={characterMenuOpen} onClose={handleMenuClose}>
+                        {characterList.map(char => (
+                            <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => handleSelectCharacter(char.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200 }}>
+                                <span>
+                                    {char.name || 'Unnamed Character'} {char.characterClass ? `(${char.characterClass})` : ''}
+                                </span>
+                                {char.id !== currentCharacterId && (
+                                    <button
+                                        onClick={e => { e.stopPropagation(); handleDeleteCharacterFromMenu(char.id); }}
+                                        style={{ background: 'none', border: 'none', color: '#f44336', marginLeft: 8, cursor: 'pointer', padding: 0 }}
+                                        aria-label="Delete character"
+                                    >
+                                        <DeleteIcon fontSize="small" />
+                                    </button>
+                                )}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+                <button
+                    onClick={handleNewCharacter}
+                    style={{ background: 'none', border: 'none', color: '#4CAF50', fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
+                    aria-label="Create new character"
+                >
+                    <AddIcon style={{ color: '#4CAF50', fontSize: 28 }} />
+                </button>
             </Box>
             <Box sx={{ pt: mode === 'play' ? 8 : 0 }}>
                 <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
-                <div style={{ marginBottom: 16, textAlign: 'center' }}>
-                    <button onClick={() => setMode(mode === 'creation' ? 'play' : 'creation')} style={{ fontSize: 16, padding: '6px 18px', marginBottom: 8 }}>
-                        Switch to {mode === 'creation' ? 'Play' : 'Creation'} Mode
+                <MainContent
+                    activeSection={activeSection}
+                    currentCharacter={currentCharacter}
+                    updateCharacterField={updateCharacterField}
+                    subclassOptions={subclassOptions}
+                    CLASS_OPTIONS={CLASS_OPTIONS}
+                    ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
+                    COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
+                    traitAssignment={traitAssignment}
+                    traitIssues={traitIssues}
+                    remainingTraitValues={remainingTraitValues}
+                    getAvailableValues={getAvailableValues}
+                    handleTraitChange={handleTraitChange}
+                    resetTraitAssignment={resetTraitAssignment}
+                    showTraitHelp={showTraitHelp}
+                    setShowTraitHelp={setShowTraitHelp}
+                    calculateThreshold={calculateThreshold}
+                    toggleCircles={toggleCircles}
+                    isCreationMode={isCreationMode}
+                    handleWeaponChange={handleWeaponChange}
+                    handleArmorChange={handleArmorChange}
+                />
+                <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
+                    <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                        Complete Character
                     </button>
+                    {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
                 </div>
-                {mode === 'creation' ? (
-                    <>
-                        {/* Only show character controls in Info section */}
-                        {activeSection === 'info' && (
-                            <div className="character-controls box" style={{ maxWidth: 600, margin: '0 auto 24px auto' }}>
-                                <label htmlFor="character-select">Select Character:</label>
-                                <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                                    {characterList.map(char => (
-                                        <option key={char.id} value={char.id}>
-                                            {char.name || 'Unnamed Character'}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button onClick={handleNewCharacter}>New Character</button>
-                                <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
-                            </div>
-                        )}
-                        <MainContent
-                            activeSection={activeSection}
-                            currentCharacter={currentCharacter}
-                            updateCharacterField={updateCharacterField}
-                            subclassOptions={subclassOptions}
-                            CLASS_OPTIONS={CLASS_OPTIONS}
-                            ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
-                            COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
-                            traitAssignment={traitAssignment}
-                            traitIssues={traitIssues}
-                            remainingTraitValues={remainingTraitValues}
-                            getAvailableValues={getAvailableValues}
-                            handleTraitChange={handleTraitChange}
-                            resetTraitAssignment={resetTraitAssignment}
-                            showTraitHelp={showTraitHelp}
-                            setShowTraitHelp={setShowTraitHelp}
-                            calculateThreshold={calculateThreshold}
-                            toggleCircles={toggleCircles}
-                            isCreationMode={isCreationMode}
-                            handleWeaponChange={handleWeaponChange}
-                            handleArmorChange={handleArmorChange}
-                        />
-                        <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
-                            <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
-                                Complete Character
-                            </button>
-                            {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
-                        </div>
-                        {/* Creation mode bottom nav */}
-                        <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
-                            {SECTIONS.map(section => (
-                                <button
-                                    key={section.key}
-                                    className={activeSection === section.key ? 'active' : ''}
-                                    onClick={() => setActiveSection(section.key)}
-                                    aria-label={section.label}
-                                    style={{ flex: 1, background: 'none', border: 'none', color: activeSection === section.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
-                                >
-                                    {section.icon}
-                                    <span className="nav-label" style={{ fontSize: 12 }}>{section.label}</span>
-                                </button>
-                            ))}
-                        </Box>
-                    </>
-                ) : (
-                    <Box sx={{ pb: 8 }}>
-                        {/* Play mode tab content */}
-                        {playTab === 'resources' && (
-                            <ResourceTracker
-                                currentCharacter={currentCharacter}
-                                toggleCircles={toggleCircles}
-                            />
-                        )}
-                        {playTab === 'traits' && (
-                            <TraitsSection
-                                traitAssignment={traitAssignment}
-                                traitIssues={traitIssues}
-                                remainingTraitValues={remainingTraitValues}
-                                getAvailableValues={getAvailableValues}
-                                handleTraitChange={handleTraitChange}
-                                resetTraitAssignment={resetTraitAssignment}
-                                showTraitHelp={showTraitHelp}
-                                setShowTraitHelp={setShowTraitHelp}
-                            />
-                        )}
-                        {playTab === 'weapons' && (
-                            <WeaponsArmorSection
-                                currentCharacter={currentCharacter}
-                                handleWeaponChange={handleWeaponChange}
-                                handleArmorChange={handleArmorChange}
-                            />
-                        )}
-                        {playTab === 'features' && (
-                            <>
-                                <FeaturesSection currentCharacter={currentCharacter} />
-                                <ExperiencesSection currentCharacter={currentCharacter} updateCharacterField={updateCharacterField} />
-                                <DomainCardsSection currentCharacter={currentCharacter} updateCharacterField={updateCharacterField} />
-                            </>
-                        )}
-                        {playTab === 'inventory' && (
-                            <InventorySection
-                                currentCharacter={currentCharacter}
-                                updateCharacterField={updateCharacterField}
-                            />
-                        )}
-                        {playTab === 'quickref' && <QuickReference />}
-                    </Box>
-                )}
+                {/* Creation mode bottom nav */}
+                <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
+                    {SECTIONS.map(section => (
+                        <button
+                            key={section.key}
+                            className={activeSection === section.key ? 'active' : ''}
+                            onClick={() => setActiveSection(section.key)}
+                            aria-label={section.label}
+                            style={{ flex: 1, background: 'none', border: 'none', color: activeSection === section.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+                        >
+                            {section.icon}
+                            <span className="nav-label" style={{ fontSize: 12 }}>{section.label}</span>
+                        </button>
+                    ))}
+                </Box>
             </Box>
             {/* Bottom Tab Bar for Play Mode */}
             {mode === 'play' && (
