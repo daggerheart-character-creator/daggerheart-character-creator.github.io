@@ -1,5 +1,7 @@
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaMusic } from 'react-icons/fa';
+import { FaBook, FaBoxOpen, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import './CharacterSheet.css';
 import { ARMOR_OPTIONS } from './constants/armor';
 import type { CharacterClass } from './constants/characterOptions';
@@ -8,18 +10,126 @@ import {
     CLASS_OPTIONS,
     CLASS_SUGGESTIONS,
     COMMUNITY_OPTIONS,
-    SECTIONS,
     SUBCLASS_OPTIONS
 } from './constants/characterOptions.tsx';
 import { CLASS_DETAILS } from './constants/classDetails';
 import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
 import MainContent from './MainContent';
+import DomainCardsSection from './sections/DomainCardsSection';
+import ExperiencesSection from './sections/ExperiencesSection';
+import FeaturesSection from './sections/FeaturesDomainsSection';
+import InventorySection from './sections/InventorySection';
+import TraitsSection from './sections/TraitsSection';
+import WeaponsArmorSection from './sections/WeaponsArmorSection';
 import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
 import type { TraitName, TraitValue } from './types/traits.ts';
 import { TRAIT_VALUES } from './types/traits.ts';
 import { createNewCharacter } from './utils/characterUtils';
 
 const isMobile = () => window.innerWidth <= 700;
+
+const PLAY_TABS = [
+    { key: 'resources', label: 'Resources', icon: <FaHeartbeat /> },
+    { key: 'traits', label: 'Traits', icon: <FaUser /> },
+    { key: 'weapons', label: 'Weapons', icon: <FaShieldAlt /> },
+    { key: 'features', label: 'Features', icon: <FaStar /> },
+    { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
+    { key: 'quickref', label: 'Quick Ref', icon: <FaBook /> },
+];
+
+function ResourceTracker({ currentCharacter, calculateThreshold, toggleCircles }: {
+    currentCharacter: DaggerheartCharacter;
+    calculateThreshold: (base: number) => number;
+    toggleCircles: (resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => void;
+}) {
+    if (!currentCharacter) return null;
+    // Evasion logic (from HealthSection)
+    const classDetail = CLASS_DETAILS[currentCharacter.characterClass] || null;
+    const baseEvasion = classDetail ? classDetail.startingEvasion : 10;
+    const getArmorEvasionMod = (activeArmor: any[]) => {
+        let mod = 0;
+        activeArmor.forEach((armor: any) => {
+            const found = ARMOR_OPTIONS.find(a => a.name === armor.name);
+            if (found && found.feature) {
+                if (found.feature.includes('+1 to Evasion')) mod += 1;
+                if (found.feature.includes('−1 to Evasion') || found.feature.includes('-1 to Evasion')) mod -= 1;
+                if (found.feature.includes('−2 to Evasion') || found.feature.includes('-2 to Evasion')) mod -= 2;
+            }
+        });
+        return mod;
+    };
+    const armorMod = getArmorEvasionMod(currentCharacter.activeArmor || []);
+    const totalEvasion = baseEvasion + armorMod;
+    const totalHP = currentCharacter.hp.length;
+    return (
+        <Paper elevation={2} sx={{ p: 1, mb: 1, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200, maxWidth: '100vw', borderRadius: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, overflowX: 'auto' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>HP</span>
+                {currentCharacter.hp.map((filled: boolean, index: number) => (
+                    <Box
+                        key={index}
+                        className={`circle${filled ? ' filled' : ''}`}
+                        onClick={() => toggleCircles('hp', index)}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
+                    />
+                ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>Stress</span>
+                {currentCharacter.stress.map((filled: boolean, index: number) => (
+                    <Box
+                        key={index}
+                        className={`circle${filled ? ' filled' : ''}`}
+                        onClick={() => toggleCircles('stress', index)}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #e67e22', backgroundColor: filled ? '#e67e22' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
+                    />
+                ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>Hope</span>
+                {currentCharacter.hope.map((filled: boolean, index: number) => (
+                    <Box
+                        key={index}
+                        className={`circle${filled ? ' filled' : ''}`}
+                        onClick={() => toggleCircles('hope', index)}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #9b59b6', backgroundColor: filled ? '#9b59b6' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
+                    />
+                ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>Prof</span>
+                {currentCharacter.proficiency.map((filled: boolean, index: number) => (
+                    <Box
+                        key={index}
+                        className={`circle${filled ? ' filled' : ''}`}
+                        onClick={() => toggleCircles('proficiency', index)}
+                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #27ae60', backgroundColor: filled ? '#27ae60' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
+                    />
+                ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>Evasion</span>
+                <span style={{ fontWeight: 700, fontSize: 15 }}>{totalEvasion}</span>
+            </Box>
+        </Paper>
+    );
+}
+
+function QuickReference() {
+    // ...show action roll steps, damage thresholds, conditions, Hope/Fear rules, etc...
+    return (
+        <Box p={2}>
+            <h2>Quick Reference</h2>
+            <ul>
+                <li><b>Action Roll:</b> Pick trait, add modifiers, roll Duality Dice, resolve.</li>
+                <li><b>Damage Thresholds:</b> Minor (1 HP), Major (2 HP), Severe (3 HP).</li>
+                <li><b>Hope:</b> Spend to help an ally, use an experience, empower spells.</li>
+                <li><b>Conditions:</b> Vulnerable, etc.</li>
+                {/* ...add more as needed... */}
+            </ul>
+        </Box>
+    );
+}
 
 const CharacterSheet: React.FC = () => {
     const [characterList, setCharacterList] = useState<DaggerheartCharacter[]>([]);
@@ -28,6 +138,7 @@ const CharacterSheet: React.FC = () => {
     const [creationError, setCreationError] = useState<string | null>(null);
     const [activeSection, setActiveSection] = useState('info');
     const [mobile, setMobile] = useState(isMobile());
+    const [playTab, setPlayTab] = useState('resources');
     const currentCharacter = characterList.find(char => char.id === currentCharacterId);
 
     useEffect(() => {
@@ -330,96 +441,141 @@ const CharacterSheet: React.FC = () => {
         setIsCreationMode(false);
     };
 
+    // Toggle between creation and play mode
+    const [mode, setMode] = useState<'creation' | 'play'>('creation');
+
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
 
     return (
-        <>
-            <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
-            <div style={{ marginBottom: 16, textAlign: 'center' }}>
-                {isCreationMode ? (
-                    <div className="creation-banner" style={{ background: '#e0f7fa', color: '#006064', padding: 8, borderRadius: 4, marginBottom: 8, display: 'inline-block' }}>
-                        <b>Character Creation Mode</b>
-                    </div>
-                ) : (
-                    <div className="play-banner" style={{ background: '#e8f5e9', color: '#1b5e20', padding: 8, borderRadius: 4, marginBottom: 8, display: 'inline-block' }}>
-                        <b>Playable Character Mode</b>
-                    </div>
+        <div className="character-sheet-container">
+            <Box sx={{ display: { xs: 'block', md: 'none' }, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200 }}>
+                {mode === 'play' && (
+                    <ResourceTracker
+                        currentCharacter={currentCharacter}
+                        calculateThreshold={calculateThreshold}
+                        toggleCircles={toggleCircles}
+                    />
                 )}
-            </div>
-            {/* Only show character controls in Info section */}
-            {activeSection === 'info' && (
-                <div className="character-controls box" style={{ maxWidth: 600, margin: '0 auto 24px auto' }}>
-                    <label htmlFor="character-select">Select Character:</label>
-                    <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                        {characterList.map(char => (
-                            <option key={char.id} value={char.id}>
-                                {char.name || 'Unnamed Character'}
-                            </option>
-                        ))}
-                    </select>
-                    <button onClick={handleNewCharacter}>New Character</button>
-                    <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
+            </Box>
+            <Box sx={{ pt: mode === 'play' ? 8 : 0 }}>
+                <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
+                <div style={{ marginBottom: 16, textAlign: 'center' }}>
+                    <button onClick={() => setMode(mode === 'creation' ? 'play' : 'creation')} style={{ fontSize: 16, padding: '6px 18px', marginBottom: 8 }}>
+                        Switch to {mode === 'creation' ? 'Play' : 'Creation'} Mode
+                    </button>
                 </div>
-            )}
-            <MainContent
-                activeSection={activeSection}
-                currentCharacter={currentCharacter}
-                updateCharacterField={updateCharacterField}
-                subclassOptions={subclassOptions}
-                CLASS_OPTIONS={CLASS_OPTIONS}
-                ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
-                COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
-                traitAssignment={traitAssignment}
-                traitIssues={traitIssues}
-                remainingTraitValues={remainingTraitValues}
-                getAvailableValues={getAvailableValues}
-                handleTraitChange={handleTraitChange}
-                resetTraitAssignment={resetTraitAssignment}
-                showTraitHelp={showTraitHelp}
-                setShowTraitHelp={setShowTraitHelp}
-                calculateThreshold={calculateThreshold}
-                toggleCircles={toggleCircles}
-                isCreationMode={isCreationMode}
-                handleWeaponChange={handleWeaponChange}
-                handleArmorChange={handleArmorChange}
-            />
-            <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
-                <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
-                    Complete Character
-                </button>
-                {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
-            </div>
-            {/* Mobile Bottom Navigation */}
-            {mobile && (
-                <nav className="mobile-nav">
-                    {SECTIONS.map(section => (
+                {mode === 'creation' ? (
+                    <>
+                        {/* Only show character controls in Info section */}
+                        {activeSection === 'info' && (
+                            <div className="character-controls box" style={{ maxWidth: 600, margin: '0 auto 24px auto' }}>
+                                <label htmlFor="character-select">Select Character:</label>
+                                <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
+                                    {characterList.map(char => (
+                                        <option key={char.id} value={char.id}>
+                                            {char.name || 'Unnamed Character'}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button onClick={handleNewCharacter}>New Character</button>
+                                <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
+                            </div>
+                        )}
+                        <MainContent
+                            activeSection={activeSection}
+                            currentCharacter={currentCharacter}
+                            updateCharacterField={updateCharacterField}
+                            subclassOptions={subclassOptions}
+                            CLASS_OPTIONS={CLASS_OPTIONS}
+                            ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
+                            COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
+                            traitAssignment={traitAssignment}
+                            traitIssues={traitIssues}
+                            remainingTraitValues={remainingTraitValues}
+                            getAvailableValues={getAvailableValues}
+                            handleTraitChange={handleTraitChange}
+                            resetTraitAssignment={resetTraitAssignment}
+                            showTraitHelp={showTraitHelp}
+                            setShowTraitHelp={setShowTraitHelp}
+                            calculateThreshold={calculateThreshold}
+                            toggleCircles={toggleCircles}
+                            isCreationMode={isCreationMode}
+                            handleWeaponChange={handleWeaponChange}
+                            handleArmorChange={handleArmorChange}
+                        />
+                        <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
+                            <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                                Complete Character
+                            </button>
+                            {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
+                        </div>
+                    </>
+                ) : (
+                    <Box sx={{ pb: 8 }}>
+                        {/* Play mode tab content */}
+                        {playTab === 'resources' && (
+                            <ResourceTracker
+                                currentCharacter={currentCharacter}
+                                calculateThreshold={calculateThreshold}
+                                toggleCircles={toggleCircles}
+                            />
+                        )}
+                        {playTab === 'traits' && (
+                            <TraitsSection
+                                traitAssignment={traitAssignment}
+                                traitIssues={traitIssues}
+                                remainingTraitValues={remainingTraitValues}
+                                getAvailableValues={getAvailableValues}
+                                handleTraitChange={handleTraitChange}
+                                resetTraitAssignment={resetTraitAssignment}
+                                showTraitHelp={showTraitHelp}
+                                setShowTraitHelp={setShowTraitHelp}
+                            />
+                        )}
+                        {playTab === 'weapons' && (
+                            <WeaponsArmorSection
+                                currentCharacter={currentCharacter}
+                                handleWeaponChange={handleWeaponChange}
+                                handleArmorChange={handleArmorChange}
+                            />
+                        )}
+                        {playTab === 'features' && (
+                            <>
+                                <FeaturesSection currentCharacter={currentCharacter} />
+                                <ExperiencesSection currentCharacter={currentCharacter} updateCharacterField={updateCharacterField} />
+                                <DomainCardsSection currentCharacter={currentCharacter} updateCharacterField={updateCharacterField} />
+                            </>
+                        )}
+                        {playTab === 'inventory' && (
+                            <InventorySection
+                                currentCharacter={currentCharacter}
+                                updateCharacterField={updateCharacterField}
+                            />
+                        )}
+                        {playTab === 'quickref' && <QuickReference />}
+                    </Box>
+                )}
+            </Box>
+            {/* Bottom Tab Bar for Play Mode */}
+            {mode === 'play' && (
+                <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
+                    {PLAY_TABS.map(tab => (
                         <button
-                            key={section.key}
-                            className={activeSection === section.key ? 'active' : ''}
-                            onClick={() => setActiveSection(section.key)}
-                            aria-label={section.label}
+                            key={tab.key}
+                            className={playTab === tab.key ? 'active' : ''}
+                            onClick={() => setPlayTab(tab.key)}
+                            aria-label={tab.label}
+                            style={{ flex: 1, background: 'none', border: 'none', color: playTab === tab.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
                         >
-                            {section.icon}
-                            <span className="nav-label">{section.label}</span>
+                            {tab.icon}
+                            <span className="nav-label" style={{ fontSize: 12 }}>{tab.label}</span>
                         </button>
                     ))}
-                    {/* Rally icon for Bard */}
-                    {currentCharacter?.characterClass === 'Bard' && (
-                        <button
-                            key="rally"
-                            className={activeSection === 'rally' ? 'active' : ''}
-                            onClick={() => setActiveSection('rally')}
-                            aria-label="Rally"
-                        >
-                            <FaMusic />
-                            <span className="nav-label">Rally</span>
-                        </button>
-                    )}
-                </nav>
+                </Box>
             )}
-        </>
+        </div>
     );
 };
 
