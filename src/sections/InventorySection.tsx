@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -38,30 +39,33 @@ const InventorySection: React.FC<InventorySectionProps> = ({ currentCharacter, u
             <Typography variant="h5" gutterBottom>INVENTORY & NOTES</Typography>
             <Stack spacing={2}>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                    <TextField
-                        label="Handfuls"
-                        type="number"
-                        inputProps={{ min: 0 }}
-                        value={gold.handfuls}
-                        onChange={e => handleGoldChange('handfuls', e.target.value)}
-                        sx={{ maxWidth: 120 }}
-                    />
-                    <TextField
-                        label="Bags"
-                        type="number"
-                        inputProps={{ min: 0 }}
-                        value={gold.bags}
-                        onChange={e => handleGoldChange('bags', e.target.value)}
-                        sx={{ maxWidth: 120 }}
-                    />
-                    <TextField
-                        label="Chests"
-                        type="number"
-                        inputProps={{ min: 0 }}
-                        value={gold.chests}
-                        onChange={e => handleGoldChange('chests', e.target.value)}
-                        sx={{ maxWidth: 120 }}
-                    />
+                    {/* Handfuls */}
+                    <Stack alignItems="center" spacing={0.5} sx={{ minWidth: 100 }}>
+                        <Typography align="center" fontWeight={600}>Handfuls</Typography>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('handfuls', String(Math.max(0, gold.handfuls - 1)))}>-</Button>
+                            <Typography sx={{ minWidth: 32, textAlign: 'center', fontWeight: 600 }}>{gold.handfuls}</Typography>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('handfuls', String(gold.handfuls + 1))}>+</Button>
+                        </Stack>
+                    </Stack>
+                    {/* Bags */}
+                    <Stack alignItems="center" spacing={0.5} sx={{ minWidth: 100 }}>
+                        <Typography align="center" fontWeight={600}>Bags</Typography>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('bags', String(Math.max(0, gold.bags - 1)))}>-</Button>
+                            <Typography sx={{ minWidth: 32, textAlign: 'center', fontWeight: 600 }}>{gold.bags}</Typography>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('bags', String(gold.bags + 1))}>+</Button>
+                        </Stack>
+                    </Stack>
+                    {/* Chests */}
+                    <Stack alignItems="center" spacing={0.5} sx={{ minWidth: 100 }}>
+                        <Typography align="center" fontWeight={600}>Chests</Typography>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('chests', String(Math.max(0, gold.chests - 1)))}>-</Button>
+                            <Typography sx={{ minWidth: 32, textAlign: 'center', fontWeight: 600 }}>{gold.chests}</Typography>
+                            <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => handleGoldChange('chests', String(gold.chests + 1))}>+</Button>
+                        </Stack>
+                    </Stack>
                     <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
                         10 Handfuls = 1 Bag, 10 Bags = 1 Chest
                     </Typography>
