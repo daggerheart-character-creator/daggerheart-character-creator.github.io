@@ -50,7 +50,7 @@ const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calcula
         armorLabel = selectedArmor.name;
     }
     return (
-        <Paper elevation={2} sx={{ p: 2, mb: 2, width: '100%' }}>
+        <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box', mt: 0 }}>
             <Typography variant="h5" gutterBottom>DAMAGE & HEALTH</Typography>
             <Box className="thresholds" sx={{ mb: 2 }}>
                 <Typography variant="subtitle1">DAMAGE THRESHOLDS (Add your level){armorLabel && ` (Armor: ${armorLabel})`}</Typography>
@@ -58,11 +58,18 @@ const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calcula
                 <Typography>MAJOR: {calculateThreshold(majorBase)} (Mark 2 HP)</Typography>
                 <Typography>SEVERE: {calculateThreshold(severeBase)} (Mark 3 HP)</Typography>
             </Box>
+            <Box className="evasion" mb={2} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography fontWeight={700} sx={{ fontSize: 18, mr: 1 }}>Evasion:</Typography>
+                <Typography fontWeight={700} sx={{ fontSize: 18, mr: 1 }}>{totalEvasion}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
+                    (Base: {baseEvasion}{armorMod !== 0 ? `, Armor: ${armorMod > 0 ? '+' : ''}${armorMod}` : ''})
+                </Typography>
+            </Box>
             <Box className="resource-tracker">
                 {currentCharacter.hp.length > 0 && (
                     <Box mb={1}>
                         <Typography fontWeight={600}>
-                            HP <span style={{ fontWeight: 700 }}>({totalHP})</span>
+                            HP: <span style={{ fontWeight: 700 }}>{totalHP}</span>
                         </Typography>
                     </Box>
                 )}
@@ -80,13 +87,6 @@ const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calcula
                 )}
                 {!isCreationMode && (
                     <>
-                        <Box className="evasion" mb={2}>
-                            <Typography fontWeight={600} display="inline">Evasion: </Typography>
-                            <Typography display="inline" mx={1}>{totalEvasion}</Typography>
-                            <Typography variant="body2" color="text.secondary" display="inline" ml={2}>
-                                (Base: {baseEvasion}{armorMod !== 0 ? `, Armor: ${armorMod > 0 ? '+' : ''}${armorMod}` : ''})
-                            </Typography>
-                        </Box>
                         <Typography fontWeight={600}>STRESS:</Typography>
                         <Stack direction="row" spacing={1} mb={2}>
                             {currentCharacter?.stress.map((filled: boolean, index: number) => (
