@@ -4,7 +4,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaBook, FaBoxOpen, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import './CharacterSheet.css';
@@ -34,98 +33,6 @@ const PLAY_TABS = [
     { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
     { key: 'quickref', label: 'Quick Ref', icon: <FaBook /> },
 ];
-
-function ResourceTracker({ currentCharacter, toggleCircles }: {
-    currentCharacter: DaggerheartCharacter;
-    toggleCircles: (resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => void;
-}) {
-    if (!currentCharacter) return null;
-    // Evasion logic (from HealthSection)
-    const classDetail = CLASS_DETAILS[currentCharacter.characterClass] || null;
-    const baseEvasion = classDetail ? classDetail.startingEvasion : 10;
-    const getArmorEvasionMod = (activeArmor: any[]) => {
-        let mod = 0;
-        activeArmor.forEach((armor: any) => {
-            const found = ARMOR_OPTIONS.find(a => a.name === armor.name);
-            if (found && found.feature) {
-                if (found.feature.includes('+1 to Evasion')) mod += 1;
-                if (found.feature.includes('−1 to Evasion') || found.feature.includes('-1 to Evasion')) mod -= 1;
-                if (found.feature.includes('−2 to Evasion') || found.feature.includes('-2 to Evasion')) mod -= 2;
-            }
-        });
-        return mod;
-    };
-    const armorMod = getArmorEvasionMod(currentCharacter.activeArmor || []);
-    const totalEvasion = baseEvasion + armorMod;
-    return (
-        <Paper elevation={2} sx={{ p: 1, mb: 1, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200, maxWidth: '100vw', borderRadius: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, overflowX: 'auto' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>HP</span>
-                {currentCharacter.hp.map((filled: boolean, index: number) => (
-                    <Box
-                        key={index}
-                        className={`circle${filled ? ' filled' : ''}`}
-                        onClick={() => toggleCircles('hp', index)}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>Stress</span>
-                {currentCharacter.stress.map((filled: boolean, index: number) => (
-                    <Box
-                        key={index}
-                        className={`circle${filled ? ' filled' : ''}`}
-                        onClick={() => toggleCircles('stress', index)}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #e67e22', backgroundColor: filled ? '#e67e22' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>Hope</span>
-                {currentCharacter.hope.map((filled: boolean, index: number) => (
-                    <Box
-                        key={index}
-                        className={`circle${filled ? ' filled' : ''}`}
-                        onClick={() => toggleCircles('hope', index)}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #9b59b6', backgroundColor: filled ? '#9b59b6' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>Prof</span>
-                {currentCharacter.proficiency.map((filled: boolean, index: number) => (
-                    <Box
-                        key={index}
-                        className={`circle${filled ? ' filled' : ''}`}
-                        onClick={() => toggleCircles('proficiency', index)}
-                        sx={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #27ae60', backgroundColor: filled ? '#27ae60' : '#fff', cursor: 'pointer', display: 'inline-block', mr: 0.5 }}
-                    />
-                ))}
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>Evasion</span>
-                <span style={{ fontWeight: 700, fontSize: 15 }}>{totalEvasion}</span>
-            </Box>
-        </Paper>
-    );
-}
-
-function QuickReference() {
-    // ...show action roll steps, damage thresholds, conditions, Hope/Fear rules, etc...
-    return (
-        <Box p={2}>
-            <h2>Quick Reference</h2>
-            <ul>
-                <li><b>Action Roll:</b> Pick trait, add modifiers, roll Duality Dice, resolve.</li>
-                <li><b>Damage Thresholds:</b> Minor (1 HP), Major (2 HP), Severe (3 HP).</li>
-                <li><b>Hope:</b> Spend to help an ally, use an experience, empower spells.</li>
-                <li><b>Conditions:</b> Vulnerable, etc.</li>
-                {/* ...add more as needed... */}
-            </ul>
-        </Box>
-    );
-}
 
 const CharacterSheet: React.FC = () => {
     const [characterList, setCharacterList] = useState<DaggerheartCharacter[]>([]);
@@ -226,18 +133,6 @@ const CharacterSheet: React.FC = () => {
         const newChar = createNewCharacter();
         setCharacterList(prevList => [...prevList, newChar]);
         setCurrentCharacterId(newChar.id);
-    };
-
-    const handleDeleteCharacter = () => {
-        if (characterList.length <= 1) {
-            const newChar = createNewCharacter();
-            setCharacterList([newChar]);
-            setCurrentCharacterId(newChar.id);
-        } else {
-            const updatedList = characterList.filter(char => char.id !== currentCharacterId);
-            setCharacterList(updatedList);
-            setCurrentCharacterId(updatedList[0].id);
-        }
     };
 
     const handleDeleteCharacterFromMenu = (id: string) => {
