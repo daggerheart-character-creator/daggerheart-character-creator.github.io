@@ -39,7 +39,11 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         classFeatures: [
             {
                 name: "Beastform",
-                description: `Mark a Stress to magically transform into a creature of your tier or lower from the Beastform list. While transformed, you can’t use weapons or cast spells from domain cards, but you can use other features or abilities. Spells cast before transforming stay active. You gain the Beastform’s features, add their Evasion bonus to your Evasion, and use the trait specified in their statistics for your attack.`
+                description: `Mark a Stress to magically transform into a creature of your tier or lower from the Beastform list. While transformed, you can't use weapons or cast spells from domain cards, but you can use other features or abilities. Spells cast before transforming stay active. You gain the Beastform's features, add their Evasion bonus to your Evasion, and use the trait specified in their statistics for your attack.`
+            },
+            {
+                name: "Wildtouch",
+                description: `You can perform harmless, subtle effects that involve nature—such as causing a flower to rapidly grow, summoning a slight gust of wind, or starting a campfire—at will.`
             }
         ],
         startingEvasion: 10,
@@ -56,7 +60,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         classFeatures: [
             {
                 name: "Unstoppable",
-                description: `Once per long rest, you can become Unstoppable. You gain an Unstoppable Die (d4 at level 1). While Unstoppable, reduce the severity of physical damage by one threshold, add the Unstoppable Die to your damage roll, and you can’t be Restrained or Vulnerable.`
+                description: `Once per long rest, you can become Unstoppable. You gain an Unstoppable Die (d4 at level 1). While Unstoppable, reduce the severity of physical damage by one threshold, add the Unstoppable Die to your damage roll, and you can't be Restrained or Vulnerable.`
             }
         ],
         startingEvasion: 9,
@@ -72,7 +76,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         description: `Rangers are indispensable trackers and navigators, using keen eyes and graceful haste to hunt down enemies and survive in the wilds.`,
         classFeatures: [
             {
-                name: "Ranger’s Focus",
+                name: "Ranger's Focus",
                 description: `Spend a Hope and make an attack against a target. On a success, deal normal damage and temporarily make the target your Focus. While focused, you know their direction, they must mark a Stress when you deal damage, and you can reroll your Duality Dice if you fail an attack against them.`
             }
         ],
@@ -100,7 +104,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         startingEvasion: 12,
         startingHP: 6,
         hopeFeature: {
-            name: "Rogue’s Dodge",
+            name: "Rogue's Dodge",
             description: `Spend 3 Hope to gain a +2 bonus to your Evasion until the next time an attack succeeds against you, or until your next rest.`
         }
     },
@@ -111,7 +115,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         classFeatures: [
             {
                 name: "Prayer Dice",
-                description: `At the beginning of each session, roll a number of d4s equal to your subclass’s Spellcast trait. You can spend Prayer Dice to aid yourself or an ally, reduce damage, add to a roll, or gain Hope. Unspent dice are cleared at the end of the session.`
+                description: `At the beginning of each session, roll a number of d4s equal to your subclass's Spellcast trait. You can spend Prayer Dice to aid yourself or an ally, reduce damage, add to a roll, or gain Hope. Unspent dice are cleared at the end of the session.`
             }
         ],
         startingEvasion: 9,
@@ -136,7 +140,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
             },
             {
                 name: "Channel Raw Power",
-                description: `Once per long rest, place a domain card from your loadout into your vault to gain Hope or enhance a spell’s damage.`
+                description: `Once per long rest, place a domain card from your loadout into your vault to gain Hope or enhance a spell's damage.`
             }
         ],
         startingEvasion: 10,
@@ -152,12 +156,12 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         description: `Warriors are masters of weapons and violence, known for their agility, strength, and relentless training. They thrive in battle and are always seeking to improve their skills.`,
         classFeatures: [
             {
-                name: "Battle Ritual",
-                description: `Once per long rest, before attempting something dangerous, clear 2 Stress and gain 2 Hope.`
+                name: "Attack of Opportunity",
+                description: `If an adversary within Melee range attempts to leave that range, make a reaction roll using a trait of your choice against their Difficulty. Choose one effect on a success, or two if you critically succeed: They can't move from where they are, you deal damage to them equal to your primary weapon's damage, or you move with them.`
             },
             {
-                name: "Courage",
-                description: `When you fail a roll with Fear, you gain a Hope.`
+                name: "Combat Training",
+                description: `You ignore burden when equipping weapons. When you deal physical damage, you gain a bonus to your damage roll equal to your level.`
             }
         ],
         startingEvasion: 11,
@@ -173,12 +177,12 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
         description: `Wizards are scholars and masters of arcane knowledge, using their intellect to wield powerful magic and manipulate the world around them.`,
         classFeatures: [
             {
-                name: "Prepared",
-                description: `Take an additional domain card of your level or lower from a domain you have access to.`
+                name: "Prestidigitation",
+                description: `You can perform harmless, subtle magical effects at will. For example, you can change an object's color, create a smell, light a candle, cause a tiny object to float, illuminate a room, or repair a small object.`
             },
             {
-                name: "Adept",
-                description: `When you Utilize an Experience, you can mark a Stress instead of spending a Hope. If you do, double your Experience modifier for that roll.`
+                name: "Strange Patterns",
+                description: `Choose a number between 1 and 12. When you roll that number on a Duality Die, gain a Hope or clear a Stress. You can change this number when you take a long rest.`
             }
         ],
         startingEvasion: 10,
@@ -190,4 +194,4 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
     }
 };
 
-// SUBCLASS_DETAILS has been moved to subclassDetails.ts 
+// SUBCLASS_DETAILS has been moved to subclassDetails.ts
