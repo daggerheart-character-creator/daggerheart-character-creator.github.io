@@ -466,7 +466,7 @@ const CharacterSheet: React.FC = () => {
         <div className="character-sheet-container">
             {/* Persistent Character Switcher Bar */}
             <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, background: '#23272a', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
                     <button
                         onClick={handleMenuClick}
                         style={{ background: 'none', border: 'none', color: '#f3f3f3', fontSize: 18, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
@@ -499,13 +499,15 @@ const CharacterSheet: React.FC = () => {
                         ))}
                     </Menu>
                 </Box>
-                <button
-                    onClick={handleNewCharacter}
-                    style={{ background: 'none', border: 'none', color: '#4CAF50', fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
-                    aria-label="Create new character"
-                >
-                    <AddIcon style={{ color: '#4CAF50', fontSize: 28 }} />
-                </button>
+                <Box sx={{ flex: 'none', ml: 2 }}>
+                    <button
+                        onClick={handleNewCharacter}
+                        style={{ background: 'none', border: 'none', color: '#4CAF50', fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
+                        aria-label="Create new character"
+                    >
+                        <AddIcon style={{ color: '#4CAF50', fontSize: 28 }} />
+                    </button>
+                </Box>
             </Box>
             <Box sx={{ pt: mode === 'play' ? 8 : 0 }}>
                 <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
