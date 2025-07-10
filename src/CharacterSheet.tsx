@@ -26,8 +26,6 @@ import type { TraitName, TraitValue } from './types/traits.ts';
 import { TRAIT_VALUES } from './types/traits.ts';
 import { createNewCharacter } from './utils/characterUtils';
 
-const isMobile = () => window.innerWidth <= 700;
-
 const PLAY_TABS = [
     { key: 'resources', label: 'Resources', icon: <FaHeartbeat /> },
     { key: 'traits', label: 'Traits', icon: <FaUser /> },
