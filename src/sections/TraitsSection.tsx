@@ -16,8 +16,6 @@ interface TraitsSectionProps {
     getAvailableValues: (trait: TraitName) => TraitValue[];
     handleTraitChange: (trait: TraitName, value: TraitValue | '') => void;
     resetTraitAssignment: () => void;
-    showTraitHelp: boolean;
-    setShowTraitHelp: (show: boolean) => void;
 }
 
 const TraitsSection: React.FC<TraitsSectionProps> = ({
@@ -27,28 +25,11 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
     getAvailableValues,
     handleTraitChange,
     resetTraitAssignment,
-    showTraitHelp,
-    setShowTraitHelp,
 }) => (
-    <Paper elevation={2} sx={{ py: 2, px: 2, mb: 2, width: '100%' }}>
+    <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
         <Typography variant="h5" gutterBottom>TRAITS</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
             <Typography variant="body1">Assign the following values to the six traits: <b>−1, 0, 0, +1, +1, +2</b>. Each value must be used exactly once. Traits affect your character's abilities in different situations.</Typography>
-            <Box
-                component="span"
-                sx={{ cursor: 'pointer', fontSize: 18 }}
-                onMouseEnter={() => setShowTraitHelp(true)}
-                onMouseLeave={() => setShowTraitHelp(false)}
-                tabIndex={0}
-                aria-label="Trait assignment help"
-            >
-                ℹ️
-            </Box>
-            {showTraitHelp && (
-                <Box sx={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 1, p: 1, position: 'absolute', zIndex: 10, ml: 1, maxWidth: 320 }}>
-                    Assign the following values to the six traits: <b>−1, 0, 0, +1, +1, +2</b>. Each value must be used exactly once. Traits affect your character's abilities in different situations.
-                </Box>
-            )}
         </Box>
         <Box style={{ marginBottom: 16 }}>
             <Stack spacing={2} direction="column">
