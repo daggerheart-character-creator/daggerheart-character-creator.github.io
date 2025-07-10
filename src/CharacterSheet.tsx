@@ -10,20 +10,13 @@ import {
     COMMUNITY_OPTIONS,
     SECTIONS,
     SUBCLASS_OPTIONS
-} from './constants/characterOptions';
+} from './constants/characterOptions.tsx';
 import { CLASS_DETAILS } from './constants/classDetails';
 import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
-import DomainCardsSection from './sections/DomainCardsSection';
-import ExperiencesSection from './sections/ExperiencesSection';
-import FeaturesSection from './sections/FeaturesDomainsSection';
-import HealthSection from './sections/HealthSection';
-import InfoSection from './sections/InfoSection';
-import InventorySection from './sections/InventorySection';
-import TraitsSection from './sections/TraitsSection';
-import WeaponsArmorSection from './sections/WeaponsArmorSection';
+import MainContent from './MainContent';
 import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
-import type { TraitName, TraitValue } from './types/traits';
-import { TRAIT_VALUES } from './types/traits';
+import type { TraitName, TraitValue } from './types/traits.ts';
+import { TRAIT_VALUES } from './types/traits.ts';
 import { createNewCharacter } from './utils/characterUtils';
 
 const isMobile = () => window.innerWidth <= 700;
@@ -337,138 +330,66 @@ const CharacterSheet: React.FC = () => {
         setIsCreationMode(false);
     };
 
-    // Helper to show/hide sections
-    const showSection = (key: string) => {
-        if (mobile) return activeSection === key;
-        return true;
-    };
-
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
 
     return (
         <>
-            <div className="character-sheet-container">
-                <h1>Daggerheart Character Sheet</h1>
-                <div style={{ marginBottom: 16 }}>
-                    {isCreationMode ? (
-                        <div className="creation-banner" style={{ background: '#e0f7fa', color: '#006064', padding: 8, borderRadius: 4, marginBottom: 8 }}>
-                            <b>Character Creation Mode</b>
-                        </div>
-                    ) : (
-                        <div className="play-banner" style={{ background: '#e8f5e9', color: '#1b5e20', padding: 8, borderRadius: 4, marginBottom: 8 }}>
-                            <b>Playable Character Mode</b>
-                        </div>
-                    )}
-                </div>
-                {/* Only show character controls in Info section */}
-                {showSection('info') && (
-                    <div className="character-controls box">
-                        <label htmlFor="character-select">Select Character:</label>
-                        <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
-                            {characterList.map(char => (
-                                <option key={char.id} value={char.id}>
-                                    {char.name || 'Unnamed Character'}
-                                </option>
-                            ))}
-                        </select>
-                        <button onClick={handleNewCharacter}>New Character</button>
-                        <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
+            <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
+            <div style={{ marginBottom: 16, textAlign: 'center' }}>
+                {isCreationMode ? (
+                    <div className="creation-banner" style={{ background: '#e0f7fa', color: '#006064', padding: 8, borderRadius: 4, marginBottom: 8, display: 'inline-block' }}>
+                        <b>Character Creation Mode</b>
+                    </div>
+                ) : (
+                    <div className="play-banner" style={{ background: '#e8f5e9', color: '#1b5e20', padding: 8, borderRadius: 4, marginBottom: 8, display: 'inline-block' }}>
+                        <b>Playable Character Mode</b>
                     </div>
                 )}
-
-                {/* Info Section */}
-                {showSection('info') && (
-                    <InfoSection
-                        currentCharacter={currentCharacter}
-                        updateCharacterField={updateCharacterField}
-                        subclassOptions={subclassOptions}
-                        CLASS_OPTIONS={CLASS_OPTIONS}
-                        ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
-                        COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
-                    />
-                )}
-
-                {/* Traits Section */}
-                {showSection('traits') && (
-                    <TraitsSection
-                        traitAssignment={traitAssignment}
-                        traitIssues={traitIssues}
-                        remainingTraitValues={remainingTraitValues}
-                        getAvailableValues={getAvailableValues}
-                        handleTraitChange={handleTraitChange}
-                        resetTraitAssignment={resetTraitAssignment}
-                        showTraitHelp={showTraitHelp}
-                        setShowTraitHelp={setShowTraitHelp}
-                    />
-                )}
-
-                {/* Health Section */}
-                {showSection('health') && (
-                    <HealthSection
-                        currentCharacter={currentCharacter}
-                        calculateThreshold={calculateThreshold}
-                        toggleCircles={toggleCircles}
-                        isCreationMode={isCreationMode}
-                    />
-                )}
-
-                {/* Weapons & Armor Section */}
-                {showSection('weapons') && (
-                    <WeaponsArmorSection
-                        currentCharacter={currentCharacter}
-                        handleWeaponChange={handleWeaponChange}
-                        handleArmorChange={handleArmorChange}
-                    />
-                )}
-
-                {/* Experiences Section */}
-                {showSection('experiences') && (
-                    <ExperiencesSection
-                        currentCharacter={currentCharacter}
-                        updateCharacterField={updateCharacterField}
-                    />
-                )}
-
-                {/* Features Section */}
-                {showSection('features') && (
-                    <FeaturesSection
-                        currentCharacter={currentCharacter}
-                    />
-                )}
-
-                {/* Domain Cards Section */}
-                {showSection('domains') && (
-                    <DomainCardsSection
-                        currentCharacter={currentCharacter}
-                        updateCharacterField={updateCharacterField}
-                    />
-                )}
-
-                {/* Inventory Section */}
-                {showSection('inventory') && (
-                    <InventorySection
-                        currentCharacter={currentCharacter}
-                        updateCharacterField={updateCharacterField}
-                    />
-                )}
-
-                {/* Rally Section (Bard only) */}
-                {currentCharacter?.characterClass === 'Bard' && showSection('rally') && (
-                    <section className="rally-section box">
-                        <h2>RALLY</h2>
-                        <p>
-                            Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
-                        </p>
-                    </section>
-                )}
-                <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
-                    <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
-                        Complete Character
-                    </button>
-                    {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
+            </div>
+            {/* Only show character controls in Info section */}
+            {activeSection === 'info' && (
+                <div className="character-controls box" style={{ maxWidth: 600, margin: '0 auto 24px auto' }}>
+                    <label htmlFor="character-select">Select Character:</label>
+                    <select id="character-select" value={currentCharacterId || ''} onChange={handleSelectCharacter}>
+                        {characterList.map(char => (
+                            <option key={char.id} value={char.id}>
+                                {char.name || 'Unnamed Character'}
+                            </option>
+                        ))}
+                    </select>
+                    <button onClick={handleNewCharacter}>New Character</button>
+                    <button onClick={handleDeleteCharacter} className="delete">Delete Current</button>
                 </div>
+            )}
+            <MainContent
+                activeSection={activeSection}
+                currentCharacter={currentCharacter}
+                updateCharacterField={updateCharacterField}
+                subclassOptions={subclassOptions}
+                CLASS_OPTIONS={CLASS_OPTIONS}
+                ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
+                COMMUNITY_OPTIONS={COMMUNITY_OPTIONS}
+                traitAssignment={traitAssignment}
+                traitIssues={traitIssues}
+                remainingTraitValues={remainingTraitValues}
+                getAvailableValues={getAvailableValues}
+                handleTraitChange={handleTraitChange}
+                resetTraitAssignment={resetTraitAssignment}
+                showTraitHelp={showTraitHelp}
+                setShowTraitHelp={setShowTraitHelp}
+                calculateThreshold={calculateThreshold}
+                toggleCircles={toggleCircles}
+                isCreationMode={isCreationMode}
+                handleWeaponChange={handleWeaponChange}
+                handleArmorChange={handleArmorChange}
+            />
+            <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
+                <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                    Complete Character
+                </button>
+                {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
             </div>
             {/* Mobile Bottom Navigation */}
             {mobile && (
