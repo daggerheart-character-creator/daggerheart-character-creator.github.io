@@ -10,6 +10,7 @@ import {
     CLASS_OPTIONS,
     CLASS_SUGGESTIONS,
     COMMUNITY_OPTIONS,
+    SECTIONS,
     SUBCLASS_OPTIONS
 } from './constants/characterOptions.tsx';
 import { CLASS_DETAILS } from './constants/classDetails';
@@ -132,7 +133,7 @@ const CharacterSheet: React.FC = () => {
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
     const [isCreationMode, setIsCreationMode] = useState(true);
     const [creationError, setCreationError] = useState<string | null>(null);
-    const [activeSection] = useState('info');
+    const [activeSection, setActiveSection] = useState('info');
     const [playTab, setPlayTab] = useState('resources');
     const currentCharacter = characterList.find(char => char.id === currentCharacterId);
 
@@ -499,6 +500,21 @@ const CharacterSheet: React.FC = () => {
                             </button>
                             {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
                         </div>
+                        {/* Creation mode bottom nav */}
+                        <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
+                            {SECTIONS.map(section => (
+                                <button
+                                    key={section.key}
+                                    className={activeSection === section.key ? 'active' : ''}
+                                    onClick={() => setActiveSection(section.key)}
+                                    aria-label={section.label}
+                                    style={{ flex: 1, background: 'none', border: 'none', color: activeSection === section.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+                                >
+                                    {section.icon}
+                                    <span className="nav-label" style={{ fontSize: 12 }}>{section.label}</span>
+                                </button>
+                            ))}
+                        </Box>
                     </>
                 ) : (
                     <Box sx={{ pb: 8 }}>
