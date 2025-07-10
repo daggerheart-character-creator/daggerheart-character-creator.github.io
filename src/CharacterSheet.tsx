@@ -37,9 +37,8 @@ const PLAY_TABS = [
     { key: 'quickref', label: 'Quick Ref', icon: <FaBook /> },
 ];
 
-function ResourceTracker({ currentCharacter, calculateThreshold, toggleCircles }: {
+function ResourceTracker({ currentCharacter, toggleCircles }: {
     currentCharacter: DaggerheartCharacter;
-    calculateThreshold: (base: number) => number;
     toggleCircles: (resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => void;
 }) {
     if (!currentCharacter) return null;
@@ -60,7 +59,6 @@ function ResourceTracker({ currentCharacter, calculateThreshold, toggleCircles }
     };
     const armorMod = getArmorEvasionMod(currentCharacter.activeArmor || []);
     const totalEvasion = baseEvasion + armorMod;
-    const totalHP = currentCharacter.hp.length;
     return (
         <Paper elevation={2} sx={{ p: 1, mb: 1, position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1200, maxWidth: '100vw', borderRadius: 0, display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 2, overflowX: 'auto' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -136,8 +134,7 @@ const CharacterSheet: React.FC = () => {
     const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
     const [isCreationMode, setIsCreationMode] = useState(true);
     const [creationError, setCreationError] = useState<string | null>(null);
-    const [activeSection, setActiveSection] = useState('info');
-    const [mobile, setMobile] = useState(isMobile());
+    const [activeSection] = useState('info');
     const [playTab, setPlayTab] = useState('resources');
     const currentCharacter = characterList.find(char => char.id === currentCharacterId);
 
@@ -158,12 +155,6 @@ const CharacterSheet: React.FC = () => {
             localStorage.setItem('daggerheartCharacters', JSON.stringify(characterList));
         }
     }, [characterList]);
-
-    useEffect(() => {
-        const onResize = () => setMobile(isMobile());
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, []);
 
     const updateCharacterField = useCallback((field: keyof DaggerheartCharacter, value: any) => {
         setCharacterList(prevList =>
@@ -454,7 +445,6 @@ const CharacterSheet: React.FC = () => {
                 {mode === 'play' && (
                     <ResourceTracker
                         currentCharacter={currentCharacter}
-                        calculateThreshold={calculateThreshold}
                         toggleCircles={toggleCircles}
                     />
                 )}
@@ -518,7 +508,6 @@ const CharacterSheet: React.FC = () => {
                         {playTab === 'resources' && (
                             <ResourceTracker
                                 currentCharacter={currentCharacter}
-                                calculateThreshold={calculateThreshold}
                                 toggleCircles={toggleCircles}
                             />
                         )}
