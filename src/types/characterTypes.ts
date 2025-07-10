@@ -70,7 +70,11 @@ export interface DaggerheartCharacter {
     presence: number;
     knowledge: number;
     evasion: number;
-    gold: string;
+    gold: {
+        handfuls: number;
+        bags: number;
+        chests: number;
+    };
     inventory: string;
     experiences: string;
     classFeatures: string;

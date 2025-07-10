@@ -22,7 +22,7 @@ export const createNewCharacter = (): DaggerheartCharacter => ({
     presence: 0,
     knowledge: 0,
     evasion: 10,
-    gold: '',
+    gold: { handfuls: 0, bags: 0, chests: 0 },
     inventory: '',
     experiences: '',
     classFeatures: '',
