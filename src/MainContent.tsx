@@ -49,8 +49,6 @@ const MainContent: React.FC<MainContentProps> = (props) => {
         getAvailableValues,
         handleTraitChange,
         resetTraitAssignment,
-        showTraitHelp,
-        setShowTraitHelp,
         calculateThreshold,
         toggleCircles,
         isCreationMode,
