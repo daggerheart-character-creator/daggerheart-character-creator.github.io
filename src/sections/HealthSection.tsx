@@ -11,8 +11,7 @@ interface HealthSectionProps {
     currentCharacter: DaggerheartCharacter;
     calculateThreshold: (base: number) => number;
     toggleCircles: (resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => void;
-    updateCharacterField?: (field: keyof DaggerheartCharacter, value: any) => void;
-    isCreationMode?: boolean;
+    isCreationMode: boolean;
 }
 
 const getArmorEvasionMod = (activeArmor: any[]) => {
@@ -28,24 +27,13 @@ const getArmorEvasionMod = (activeArmor: any[]) => {
     return mod;
 };
 
-const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calculateThreshold, toggleCircles, updateCharacterField, isCreationMode }) => {
+const HealthSection: React.FC<HealthSectionProps> = ({ currentCharacter, calculateThreshold, toggleCircles, isCreationMode }) => {
     if (!currentCharacter) return null;
     const classDetail = CLASS_DETAILS[currentCharacter.characterClass] || null;
     const baseEvasion = classDetail ? classDetail.startingEvasion : 10;
     const armorMod = getArmorEvasionMod(currentCharacter.activeArmor || []);
     const totalEvasion = baseEvasion + armorMod;
     const totalHP = currentCharacter.hp.length;
-
-    const handleHpChange = (delta: number) => {
-        if (!updateCharacterField) return;
-        let newHp = [...currentCharacter.hp];
-        if (delta > 0) {
-            newHp.push(false);
-        } else if (delta < 0 && newHp.length > 1) {
-            newHp.pop();
-        }
-        updateCharacterField('hp', newHp);
-    };
 
     // Get selected armor thresholds
     let minorBase = 10, majorBase = 15, severeBase = 20, armorLabel = '';

@@ -13,8 +13,9 @@ import {
 } from './constants/characterOptions';
 import { CLASS_DETAILS } from './constants/classDetails';
 import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
+import DomainCardsSection from './sections/DomainCardsSection';
 import ExperiencesSection from './sections/ExperiencesSection';
-import FeaturesDomainsSection from './sections/FeaturesDomainsSection';
+import FeaturesSection from './sections/FeaturesDomainsSection';
 import HealthSection from './sections/HealthSection';
 import InfoSection from './sections/InfoSection';
 import InventorySection from './sections/InventorySection';
@@ -220,12 +221,12 @@ const CharacterSheet: React.FC = () => {
     React.useEffect(() => {
         if (currentCharacter) {
             setTraitAssignment({
-                agility: currentCharacter.agility ?? null,
-                strength: currentCharacter.strength ?? null,
-                finesse: currentCharacter.finesse ?? null,
-                instinct: currentCharacter.instinct ?? null,
-                presence: currentCharacter.presence ?? null,
-                knowledge: currentCharacter.knowledge ?? null,
+                agility: (currentCharacter.agility ?? null) as TraitValue | null,
+                strength: (currentCharacter.strength ?? null) as TraitValue | null,
+                finesse: (currentCharacter.finesse ?? null) as TraitValue | null,
+                instinct: (currentCharacter.instinct ?? null) as TraitValue | null,
+                presence: (currentCharacter.presence ?? null) as TraitValue | null,
+                knowledge: (currentCharacter.knowledge ?? null) as TraitValue | null,
             });
         }
     }, [currentCharacter]);
@@ -409,7 +410,6 @@ const CharacterSheet: React.FC = () => {
                         currentCharacter={currentCharacter}
                         calculateThreshold={calculateThreshold}
                         toggleCircles={toggleCircles}
-                        updateCharacterField={updateCharacterField as (field: keyof DaggerheartCharacter, value: any) => void}
                         isCreationMode={isCreationMode}
                     />
                 )}
@@ -431,9 +431,16 @@ const CharacterSheet: React.FC = () => {
                     />
                 )}
 
-                {/* Features & Domains Section */}
+                {/* Features Section */}
                 {showSection('features') && (
-                    <FeaturesDomainsSection
+                    <FeaturesSection
+                        currentCharacter={currentCharacter}
+                    />
+                )}
+
+                {/* Domain Cards Section */}
+                {showSection('domains') && (
+                    <DomainCardsSection
                         currentCharacter={currentCharacter}
                         updateCharacterField={updateCharacterField}
                     />

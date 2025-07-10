@@ -130,6 +130,30 @@ export const DOMAIN_CARDS: Record<string, DomainCard[]> = {
     ],
     Codex: [
         {
+            name: "Book of Ava",
+            level: 1,
+            domain: "Codex",
+            type: "grimoire",
+            recallCost: 2,
+            description: "Power Push: Make a Spellcast Roll against a target within Melee range. On a success, they're knocked back to Far range and take d10+2 magic damage using your Proficiency."
+        },
+        {
+            name: "Book of Tyfar",
+            level: 1,
+            domain: "Codex",
+            type: "grimoire",
+            recallCost: 2,
+            description: "Wild Flame: Make a Spellcast Roll against up to three adversaries within Melee range. Targets you succeed against take 2d6 magic damage and must mark a Stress as flames erupt from your hand."
+        },
+        {
+            name: "Book of Vagras",
+            level: 1,
+            domain: "Codex",
+            type: "grimoire",
+            recallCost: 2,
+            description: "Runic Lock: Make a Spellcast Roll (15) on an object you're touching that can close (such as a lock, chest, or box). Once per rest on a success, you can lock the object so it can only be opened by creatures of your choice. Someone with access to magic and an hour of time to study the spell can break it. Tava's Armor: Spend a Hope to give a target you can touch a +1 bonus to their Armor Score until their next rest or you cast Tava's Armor again. Magic Hand: You conjure a magical hand with the same size and strength as your own within Far range. Ice Spike: Make a Spellcast Roll (12) to summon a large ice spike within Far range. If you use it as a weapon, make the Spellcast Roll against the target's Difficulty instead. On a success, deal d6 physical damage using your Proficiency. Mysterious Mist: Make a Spellcast Roll (13) to cast a temporary thick fog that gathers in a stationary area within Very Close range. The fog heavily obscures this area and everything in it."
+        },
+        {
             name: "Book of Sages",
             level: 1,
             domain: "Codex",
