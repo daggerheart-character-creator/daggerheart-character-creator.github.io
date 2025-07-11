@@ -218,9 +218,6 @@ const CharacterSheet: React.FC = () => {
         });
     };
 
-    // Tooltip/help
-    const [showTraitHelp, setShowTraitHelp] = useState(false);
-
     // Helper for subclass options
     const subclassOptions = currentCharacter?.characterClass && SUBCLASS_OPTIONS[currentCharacter.characterClass as CharacterClass] || [];
 
@@ -318,7 +315,6 @@ const CharacterSheet: React.FC = () => {
                 <MainContent
                     activeSection={currentSection}
                     currentCharacter={currentCharacter}
-                    updateCharacterField={updateCharacterField}
                     subclassOptions={subclassOptions}
                     CLASS_OPTIONS={CLASS_OPTIONS}
                     ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
@@ -329,8 +325,6 @@ const CharacterSheet: React.FC = () => {
                     getAvailableValues={getAvailableValues}
                     handleTraitChange={handleTraitChange}
                     resetTraitAssignment={resetTraitAssignment}
-                    showTraitHelp={showTraitHelp}
-                    setShowTraitHelp={setShowTraitHelp}
                     calculateThreshold={calculateThreshold}
                 />
                 {/* Dice tab content */}

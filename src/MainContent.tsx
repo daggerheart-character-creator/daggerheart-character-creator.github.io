@@ -14,7 +14,6 @@ import type { TraitName, TraitValue } from './types/traits';
 interface MainContentProps {
     activeSection: string;
     currentCharacter: DaggerheartCharacter;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
     subclassOptions: any;
     CLASS_OPTIONS: any;
     ANCESTRY_OPTIONS: any;
@@ -25,8 +24,6 @@ interface MainContentProps {
     getAvailableValues: (trait: TraitName) => TraitValue[];
     handleTraitChange: (trait: TraitName, value: TraitValue | '') => void;
     resetTraitAssignment: () => void;
-    showTraitHelp: boolean;
-    setShowTraitHelp: (show: boolean) => void;
     calculateThreshold: (base: number) => number;
 }
 
@@ -34,7 +31,6 @@ const MainContent: React.FC<MainContentProps> = (props) => {
     const {
         activeSection,
         currentCharacter,
-        updateCharacterField,
         subclassOptions,
         CLASS_OPTIONS,
         ANCESTRY_OPTIONS,
@@ -46,8 +42,6 @@ const MainContent: React.FC<MainContentProps> = (props) => {
         handleTraitChange,
         resetTraitAssignment,
         calculateThreshold,
-        showTraitHelp,
-        setShowTraitHelp,
     } = props;
 
     return (

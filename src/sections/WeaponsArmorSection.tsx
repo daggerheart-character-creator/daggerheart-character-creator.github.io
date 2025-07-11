@@ -48,7 +48,14 @@ const WeaponsArmorSection: React.FC<WeaponsArmorSectionProps> = () => {
                                         labelId={`weapon-select-label-${index}`}
                                         value={weapon.name}
                                         label={isPrimary ? 'Primary Weapon' : 'Secondary Weapon'}
-                                        onChange={e => updateCharacterField(index, 'activeWeapons', 'name', e.target.value)}
+                                        onChange={e => {
+                                            const updatedWeapons = [...currentCharacter.activeWeapons];
+                                            updatedWeapons[index] = {
+                                                ...updatedWeapons[index],
+                                                name: e.target.value
+                                            };
+                                            updateCharacterField('activeWeapons', updatedWeapons);
+                                        }}
                                     >
                                         <MenuItem value=""><em>Select a weapon...</em></MenuItem>
                                         {options.map(opt => (
@@ -83,7 +90,14 @@ const WeaponsArmorSection: React.FC<WeaponsArmorSectionProps> = () => {
                                         labelId={`armor-select-label-${index}`}
                                         value={armor.name}
                                         label="Armor"
-                                        onChange={e => updateCharacterField(index, 'activeArmor', 'name', e.target.value)}
+                                        onChange={e => {
+                                            const updatedArmor = [...currentCharacter.activeArmor];
+                                            updatedArmor[index] = {
+                                                ...updatedArmor[index],
+                                                name: e.target.value
+                                            };
+                                            updateCharacterField('activeArmor', updatedArmor);
+                                        }}
                                     >
                                         <MenuItem value=""><em>Select armor...</em></MenuItem>
                                         {ARMOR_OPTIONS.map(opt => (
