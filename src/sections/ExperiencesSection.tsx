@@ -5,14 +5,15 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import type { DaggerheartCharacter } from '../types/characterTypes';
+import { useCharacter } from '../CharacterContext';
 
 interface ExperiencesSectionProps {
-    currentCharacter: DaggerheartCharacter;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
+    // currentCharacter: DaggerheartCharacter; // Removed as per edit hint
+    // updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void; // Removed as per edit hint
 }
 
-const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({ currentCharacter, updateCharacterField }) => {
+const ExperiencesSection: React.FC<ExperiencesSectionProps> = () => {
+    const { currentCharacter, updateCharacterField } = useCharacter();
     const experiences = currentCharacter?.experiences || [];
 
     const handleExperienceChange = (idx: number, field: 'text' | 'bonus', value: string | number) => {

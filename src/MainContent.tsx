@@ -8,7 +8,7 @@ import InfoSection from './sections/InfoSection';
 import InventorySection from './sections/InventorySection';
 import TraitsSection from './sections/TraitsSection';
 import WeaponsArmorSection from './sections/WeaponsArmorSection';
-import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
+import type { DaggerheartCharacter } from './types/characterTypes';
 import type { TraitName, TraitValue } from './types/traits';
 
 interface MainContentProps {
@@ -28,10 +28,6 @@ interface MainContentProps {
     showTraitHelp: boolean;
     setShowTraitHelp: (show: boolean) => void;
     calculateThreshold: (base: number) => number;
-    toggleCircles: (resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => void;
-    isCreationMode: boolean;
-    handleWeaponChange: (index: number, field: keyof Weapon, value: string) => void;
-    handleArmorChange: (index: number, field: keyof Armor, value: string) => void;
 }
 
 const MainContent: React.FC<MainContentProps> = (props) => {
@@ -50,10 +46,8 @@ const MainContent: React.FC<MainContentProps> = (props) => {
         handleTraitChange,
         resetTraitAssignment,
         calculateThreshold,
-        toggleCircles,
-        isCreationMode,
-        handleWeaponChange,
-        handleArmorChange,
+        showTraitHelp,
+        setShowTraitHelp,
     } = props;
 
     return (
@@ -61,8 +55,6 @@ const MainContent: React.FC<MainContentProps> = (props) => {
             {/* Info Section */}
             {activeSection === 'info' && (
                 <InfoSection
-                    currentCharacter={currentCharacter}
-                    updateCharacterField={updateCharacterField}
                     subclassOptions={subclassOptions}
                     CLASS_OPTIONS={CLASS_OPTIONS}
                     ANCESTRY_OPTIONS={ANCESTRY_OPTIONS}
@@ -80,47 +72,37 @@ const MainContent: React.FC<MainContentProps> = (props) => {
                     resetTraitAssignment={resetTraitAssignment}
                 />
             )}
-            {/* Health Section */}
+            {/* Resources Section (play mode) */}
+            {activeSection === 'resources' && (
+                <HealthSection
+                    calculateThreshold={calculateThreshold}
+                />
+            )}
+            {/* Health Section (creation mode) */}
             {activeSection === 'health' && (
                 <HealthSection
-                    currentCharacter={currentCharacter}
                     calculateThreshold={calculateThreshold}
-                    toggleCircles={toggleCircles}
-                    isCreationMode={isCreationMode}
                 />
             )}
             {/* Weapons & Armor Section */}
             {activeSection === 'weapons' && (
-                <WeaponsArmorSection
-                    currentCharacter={currentCharacter}
-                    handleWeaponChange={handleWeaponChange}
-                    handleArmorChange={handleArmorChange}
-                />
+                <WeaponsArmorSection />
             )}
             {/* Experiences Section */}
             {activeSection === 'experiences' && (
-                <ExperiencesSection
-                    currentCharacter={currentCharacter}
-                    updateCharacterField={updateCharacterField}
-                />
+                <ExperiencesSection />
             )}
             {/* Features Section */}
             {activeSection === 'features' && (
-                <FeaturesSection currentCharacter={currentCharacter} />
+                <FeaturesSection />
             )}
             {/* Domain Cards Section */}
             {activeSection === 'domains' && (
-                <DomainCardsSection
-                    currentCharacter={currentCharacter}
-                    updateCharacterField={updateCharacterField}
-                />
+                <DomainCardsSection />
             )}
             {/* Inventory Section */}
             {activeSection === 'inventory' && (
-                <InventorySection
-                    currentCharacter={currentCharacter}
-                    updateCharacterField={updateCharacterField}
-                />
+                <InventorySection />
             )}
             {/* Rally Section (Bard only) */}
             {currentCharacter?.characterClass === 'Bard' && activeSection === 'rally' && (

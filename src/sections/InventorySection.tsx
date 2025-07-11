@@ -4,11 +4,11 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import type { DaggerheartCharacter } from '../types/characterTypes';
+import { useCharacter } from '../CharacterContext';
 
 interface InventorySectionProps {
-    currentCharacter: DaggerheartCharacter;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
+    // currentCharacter: DaggerheartCharacter; // Removed as per edit hint
+    // updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void; // Removed as per edit hint
 }
 
 const parseGold = (gold: any) => {
@@ -28,7 +28,8 @@ const parseGold = (gold: any) => {
     };
 };
 
-const InventorySection: React.FC<InventorySectionProps> = ({ currentCharacter, updateCharacterField }) => {
+const InventorySection: React.FC<InventorySectionProps> = () => {
+    const { currentCharacter, updateCharacterField } = useCharacter();
     const gold = parseGold(currentCharacter?.gold);
     const handleGoldChange = (field: 'handfuls' | 'bags' | 'chests', value: string) => {
         const num = Math.max(0, parseInt(value.replace(/\D/g, '') || '0', 10));

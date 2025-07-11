@@ -5,7 +5,8 @@ import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FaBook, FaBoxOpen, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
+import { FaBook, FaBoxOpen, FaDiceD20, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
+import { useCharacter } from './CharacterContext';
 import './CharacterSheet.css';
 import { ARMOR_OPTIONS } from './constants/armor';
 import type { CharacterClass } from './constants/characterOptions';
@@ -20,10 +21,10 @@ import {
 import { CLASS_DETAILS } from './constants/classDetails';
 import { MAGIC_WEAPONS, PRIMARY_WEAPONS, SECONDARY_WEAPONS } from './constants/weapons';
 import MainContent from './MainContent';
-import type { Armor, DaggerheartCharacter, Weapon } from './types/characterTypes';
+import DiceTab from './sections/DiceTab';
+import type { DaggerheartCharacter } from './types/characterTypes';
 import type { TraitName, TraitValue } from './types/traits.ts';
 import { TRAIT_VALUES } from './types/traits.ts';
-import { createNewCharacter } from './utils/characterUtils';
 
 const PLAY_TABS = [
     { key: 'resources', label: 'Resources', icon: <FaHeartbeat /> },
@@ -32,123 +33,14 @@ const PLAY_TABS = [
     { key: 'features', label: 'Features', icon: <FaStar /> },
     { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
     { key: 'quickref', label: 'Quick Ref', icon: <FaBook /> },
+    { key: 'dice', label: 'Dice', icon: <FaDiceD20 /> }, // New Dice tab
 ];
 
 const CharacterSheet: React.FC = () => {
-    const [characterList, setCharacterList] = useState<DaggerheartCharacter[]>([]);
-    const [currentCharacterId, setCurrentCharacterId] = useState<string | null>(null);
-    const [isCreationMode, setIsCreationMode] = useState(true);
+    const { characters, currentCharacter, currentCharacterId, setCurrentCharacterId, addCharacter, deleteCharacter, updateCharacterField } = useCharacter();
     const [creationError, setCreationError] = useState<string | null>(null);
     const [activeSection, setActiveSection] = useState('info');
     const [playTab, setPlayTab] = useState('resources');
-    const currentCharacter = characterList.find(char => char.id === currentCharacterId);
-
-    useEffect(() => {
-        const savedCharacters = JSON.parse(localStorage.getItem('daggerheartCharacters') || '[]');
-        if (savedCharacters.length > 0) {
-            setCharacterList(savedCharacters);
-            setCurrentCharacterId(savedCharacters[0].id);
-        } else {
-            const newChar = createNewCharacter();
-            setCharacterList([newChar]);
-            setCurrentCharacterId(newChar.id);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (characterList.length > 0) {
-            localStorage.setItem('daggerheartCharacters', JSON.stringify(characterList));
-        }
-    }, [characterList]);
-
-    const updateCharacterField = useCallback((field: keyof DaggerheartCharacter, value: any) => {
-        setCharacterList(prevList =>
-            prevList.map(char =>
-                char.id === currentCharacterId
-                    ? { ...char, [field]: value }
-                    : char
-            )
-        );
-    }, [currentCharacterId]);
-
-    const toggleCircles = useCallback((resourceType: 'hp' | 'stress' | 'hope' | 'proficiency', index: number) => {
-        setCharacterList(prevList =>
-            prevList.map(char =>
-                char.id === currentCharacterId
-                    ? {
-                        ...char,
-                        [resourceType]: char[resourceType].map((val: boolean, i: number) =>
-                            i === index ? !val : val
-                        )
-                    }
-                    : char
-            )
-        );
-    }, [currentCharacterId]);
-
-    const handleWeaponChange = useCallback((index: number, field: keyof Weapon, value: string) => {
-        setCharacterList(prevList =>
-            prevList.map(char =>
-                char.id === currentCharacterId
-                    ? {
-                        ...char,
-                        activeWeapons: char.activeWeapons.map((weapon, i) =>
-                            i === index ? { ...weapon, [field]: value } : weapon
-                        )
-                    }
-                    : char
-            )
-        );
-    }, [currentCharacterId]);
-
-    const handleArmorChange = useCallback((index: number, field: keyof Armor, value: string) => {
-        setCharacterList(prevList =>
-            prevList.map(char =>
-                char.id === currentCharacterId
-                    ? {
-                        ...char,
-                        activeArmor: char.activeArmor.map((armor, i) =>
-                            i === index ? { ...armor, [field]: value } : armor
-                        )
-                    }
-                    : char
-            )
-        );
-    }, [currentCharacterId]);
-
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const characterMenuOpen = Boolean(anchorEl);
-    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-    const handleSelectCharacter = (id: string) => {
-        setCurrentCharacterId(id);
-        setAnchorEl(null);
-    };
-
-    const handleNewCharacter = () => {
-        const newChar = createNewCharacter();
-        setCharacterList(prevList => [...prevList, newChar]);
-        setCurrentCharacterId(newChar.id);
-    };
-
-    const handleDeleteCharacterFromMenu = (id: string) => {
-        if (characterList.length <= 1) {
-            const newChar = createNewCharacter();
-            setCharacterList([newChar]);
-            setCurrentCharacterId(newChar.id);
-        } else {
-            const updatedList = characterList.filter(char => char.id !== id);
-            setCharacterList(updatedList);
-            if (currentCharacterId === id) {
-                setCurrentCharacterId(updatedList[0].id);
-            }
-        }
-        setAnchorEl(null);
-    };
 
     const calculateThreshold = useCallback((base: number) => {
         return currentCharacter ? base + currentCharacter.level : base;
@@ -350,11 +242,11 @@ const CharacterSheet: React.FC = () => {
             return;
         }
         setCreationError(null);
-        setIsCreationMode(false);
+        updateCharacterField('completed', true);
     };
 
     // Determine mode based on completion
-    const isCompleted = !isCreationMode;
+    const isCompleted = !!currentCharacter?.completed;
     const mode = isCompleted ? 'play' : 'creation';
 
     // Determine which section to show based on mode
@@ -363,6 +255,16 @@ const CharacterSheet: React.FC = () => {
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
+
+    // Menu anchor state for dropdown
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const characterMenuOpen = Boolean(anchorEl);
+    const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <div className="character-sheet-container">
@@ -383,14 +285,14 @@ const CharacterSheet: React.FC = () => {
                         <ArrowDropDownIcon style={{ color: '#f3f3f3' }} />
                     </button>
                     <Menu anchorEl={anchorEl} open={characterMenuOpen} onClose={handleMenuClose}>
-                        {characterList.map(char => (
-                            <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => handleSelectCharacter(char.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200 }}>
+                        {characters.map(char => (
+                            <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => { setCurrentCharacterId(char.id); handleMenuClose(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200 }}>
                                 <span>
                                     {char.name || 'Unnamed Character'} {char.characterClass ? `(${char.characterClass})` : ''}
                                 </span>
                                 {char.id !== currentCharacterId && (
                                     <button
-                                        onClick={e => { e.stopPropagation(); handleDeleteCharacterFromMenu(char.id); }}
+                                        onClick={e => { e.stopPropagation(); deleteCharacter(char.id); }}
                                         style={{ background: 'none', border: 'none', color: '#f44336', marginLeft: 8, cursor: 'pointer', padding: 0 }}
                                         aria-label="Delete character"
                                     >
@@ -403,7 +305,7 @@ const CharacterSheet: React.FC = () => {
                 </Box>
                 <Box sx={{ flex: 'none', ml: 2 }}>
                     <button
-                        onClick={handleNewCharacter}
+                        onClick={addCharacter}
                         style={{ background: 'none', border: 'none', color: '#4CAF50', fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
                         aria-label="Create new character"
                     >
@@ -430,11 +332,11 @@ const CharacterSheet: React.FC = () => {
                     showTraitHelp={showTraitHelp}
                     setShowTraitHelp={setShowTraitHelp}
                     calculateThreshold={calculateThreshold}
-                    toggleCircles={toggleCircles}
-                    isCreationMode={isCreationMode}
-                    handleWeaponChange={handleWeaponChange}
-                    handleArmorChange={handleArmorChange}
                 />
+                {/* Dice tab content */}
+                {mode === 'play' && playTab === 'dice' && (
+                    <DiceTab />
+                )}
                 <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
                     {mode === 'creation' && (
                         <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>

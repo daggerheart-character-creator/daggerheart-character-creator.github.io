@@ -9,15 +9,16 @@ import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
+import { useCharacter } from '../CharacterContext';
 import { getAvailableDomainCards, type DomainCard } from '../constants/domainCards';
-import type { DaggerheartCharacter } from '../types/characterTypes';
 
 interface DomainCardsSectionProps {
-    currentCharacter: DaggerheartCharacter;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
+    // currentCharacter: DaggerheartCharacter; // Removed as per edit hint
+    // updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void; // Removed as per edit hint
 }
 
-const DomainCardsSection: React.FC<DomainCardsSectionProps> = ({ currentCharacter, updateCharacterField }) => {
+const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
+    const { currentCharacter, updateCharacterField } = useCharacter();
     const availableCards = getAvailableDomainCards(currentCharacter.characterClass, currentCharacter.level);
     const [selectedCardForDetails, setSelectedCardForDetails] = useState<string>('');
 
@@ -57,7 +58,7 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = ({ currentCharacte
     const selectedCardDetails = availableCards.find(card => card.name === selectedCardForDetails);
 
     return (
-        <Paper elevation={2} sx={{ p: 2, mb: 2, width: '100%' }}>
+        <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
             <Typography variant="h5" gutterBottom>DOMAIN CARDS</Typography>
 
             {!currentCharacter.characterClass ? (

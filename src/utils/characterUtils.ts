@@ -24,7 +24,7 @@ export const createNewCharacter = (): DaggerheartCharacter => ({
     evasion: 10,
     gold: { handfuls: 0, bags: 0, chests: 0 },
     inventory: '',
-    experiences: '',
+    experiences: [],
     classFeatures: '',
     domainCards: [],
     activeWeapons: [
@@ -42,4 +42,6 @@ export const createNewCharacter = (): DaggerheartCharacter => ({
         presence: false,
         knowledge: false,
     },
+    armorSlots: Array(3).fill(false), // Default to 3 slots (Gambeson/Leather)
+    completed: false,
 }); 

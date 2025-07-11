@@ -7,16 +7,17 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
+import { useCharacter } from '../CharacterContext';
 import { ANCESTRY_DETAILS } from '../constants/ancestryDetails';
 import type { ClassDetail } from '../constants/classDetails';
 import { CLASS_DETAILS } from '../constants/classDetails';
 import { COMMUNITY_DETAILS } from '../constants/communityDetails';
 import { SUBCLASS_DETAILS } from '../constants/subclassDetails';
-import type { AncestryDetail, CommunityDetail, DaggerheartCharacter, SubclassDetail } from '../types/characterTypes';
+import type { AncestryDetail, CommunityDetail, SubclassDetail } from '../types/characterTypes';
 
 interface InfoSectionProps {
-    currentCharacter: DaggerheartCharacter;
-    updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void;
+    // currentCharacter: DaggerheartCharacter; // Removed
+    // updateCharacterField: (field: keyof DaggerheartCharacter, value: any) => void; // Removed
     subclassOptions: string[];
     CLASS_OPTIONS: readonly string[];
     ANCESTRY_OPTIONS: readonly string[];
@@ -24,17 +25,16 @@ interface InfoSectionProps {
 }
 
 const InfoSection: React.FC<InfoSectionProps> = ({
-    currentCharacter,
-    updateCharacterField,
     subclassOptions,
     CLASS_OPTIONS,
     ANCESTRY_OPTIONS,
     COMMUNITY_OPTIONS,
 }) => {
+    const { currentCharacter, updateCharacterField } = useCharacter();
     const classDetail: ClassDetail | undefined = currentCharacter.characterClass ? CLASS_DETAILS[currentCharacter.characterClass] : undefined;
 
     return (
-        <Paper elevation={2} sx={{ p: 2, mb: 2, width: '100%' }}>
+        <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
             <Typography variant="h5" gutterBottom>BASIC INFO</Typography>
             <Stack spacing={2}>
                 <TextField

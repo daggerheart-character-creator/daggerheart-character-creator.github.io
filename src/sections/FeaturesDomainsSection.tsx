@@ -1,18 +1,19 @@
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import React from 'react';
+import { useCharacter } from '../CharacterContext';
 import { CLASS_DETAILS } from '../constants/classDetails';
-import type { DaggerheartCharacter } from '../types/characterTypes';
 
 interface FeaturesSectionProps {
-    currentCharacter: DaggerheartCharacter;
+    // currentCharacter: DaggerheartCharacter; // Removed as per edit hint
 }
 
-const FeaturesSection: React.FC<FeaturesSectionProps> = ({ currentCharacter }) => {
+const FeaturesSection: React.FC<FeaturesSectionProps> = () => {
+    const { currentCharacter } = useCharacter();
     const classDetail = currentCharacter?.characterClass ? CLASS_DETAILS[currentCharacter.characterClass] : null;
 
     return (
-        <Paper elevation={2} sx={{ p: 2, mb: 2, width: '100%' }}>
+        <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
             <Typography variant="h5" gutterBottom>CLASS FEATURES</Typography>
             {classDetail ? (
                 <div style={{ marginBottom: 16 }}>

@@ -76,10 +76,12 @@ export interface DaggerheartCharacter {
         chests: number;
     };
     inventory: string;
-    experiences: string;
+    experiences: { text: string; bonus: number }[];
     classFeatures: string;
     domainCards: DomainCard[];
     activeWeapons: Weapon[];
     activeArmor: Armor[];
     traitUpgrades: TraitUpgrades;
+    armorSlots?: boolean[];
+    completed?: boolean;
 } 
