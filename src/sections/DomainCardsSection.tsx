@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import Collapse from '@mui/material/Collapse';
 import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -21,6 +23,7 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
     const { currentCharacter, updateCharacterField } = useCharacter();
     const availableCards = getAvailableDomainCards(currentCharacter.characterClass, currentCharacter.level);
     const [selectedCardForDetails, setSelectedCardForDetails] = useState<string>('');
+    const [expandedCards, setExpandedCards] = useState<{ [name: string]: boolean }>({});
 
     // Handle transition from old string format to new array format
     let selectedCards: DomainCard[] = [];
@@ -44,6 +47,10 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
         }
 
         updateCharacterField('domainCards', newCards);
+    };
+
+    const toggleExpandCard = (name: string) => {
+        setExpandedCards(prev => ({ ...prev, [name]: !prev[name] }));
     };
 
     const getCardTypeColor = (type: string) => {
@@ -139,25 +146,54 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
                             </Typography>
                             <Stack spacing={1}>
                                 {selectedCards.map((card, idx) => (
-                                    <Paper key={idx} elevation={1} sx={{ p: 1.5, background: '#e8f5e8' }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Box>
-                                                <Typography variant="subtitle2" fontWeight={600}>
-                                                    {card.name} (Level {card.level})
-                                                </Typography>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    {card.domain} • {card.type} • Recall Cost: {card.recallCost}
-                                                </Typography>
-                                            </Box>
+                                    <Paper key={idx} elevation={1} sx={{ p: 1, background: '#e8f5e8' }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => toggleExpandCard(card.name)}
+                                                sx={{
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    p: '0 !important',
+                                                    m: 0,
+                                                    borderRadius: '0 !important',
+                                                    background: 'none !important',
+                                                    border: 'none !important',
+                                                    minWidth: '0 !important',
+                                                    minHeight: '0 !important',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    boxShadow: 'none',
+                                                }}
+                                                aria-label={expandedCards[card.name] ? 'Collapse' : 'Expand'}
+                                            >
+                                                <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{expandedCards[card.name] ? '–' : '+'}</span>
+                                            </IconButton>
+                                            <Typography variant="subtitle2" fontWeight={600} sx={{ flexGrow: 1, ml: 1, mr: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                {card.name} – {card.level}
+                                            </Typography>
                                             <Chip
                                                 label="Remove"
                                                 size="small"
                                                 color="error"
                                                 variant="outlined"
                                                 onClick={() => handleCardSelection(card)}
-                                                sx={{ cursor: 'pointer' }}
+                                                sx={{ cursor: 'pointer', ml: 1 }}
                                             />
                                         </Box>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5, mb: 0.5, gap: 1, flexWrap: 'wrap' }}>
+                                            <Typography variant="caption" color="text.secondary" sx={{ mr: 1 }}>
+                                                {card.domain} • {card.type} • Recall Cost: {card.recallCost}
+                                            </Typography>
+                                        </Box>
+                                        <Collapse in={!!expandedCards[card.name]} timeout="auto" unmountOnExit>
+                                            <Box sx={{ mt: 0.5 }}>
+                                                <Typography variant="body2">
+                                                    {card.description}
+                                                </Typography>
+                                            </Box>
+                                        </Collapse>
                                     </Paper>
                                 ))}
                             </Stack>
