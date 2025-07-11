@@ -75,7 +75,7 @@ const BackgroundSection: React.FC = () => {
                 Answer any of the following background questions. You can also create your own questions.
             </Typography>
             <Stack spacing={3} sx={{ mb: 4 }}>
-                {classData.questions.map((q, idx) => (
+                {classData.questions.map((q) => (
                     <div key={q}>
                         <Typography variant="subtitle1" sx={{ mb: 1 }}>{q}</Typography>
                         <TextField
@@ -130,7 +130,7 @@ const BackgroundSection: React.FC = () => {
                 Ask your fellow players one of the following questions for their character to answer, or create your own questions.
             </Typography>
             <Stack spacing={3}>
-                {classData.connections.map((q, idx) => (
+                {classData.connections.map((q) => (
                     <div key={q}>
                         <Typography variant="subtitle1" sx={{ mb: 1 }}>{q}</Typography>
                         <TextField

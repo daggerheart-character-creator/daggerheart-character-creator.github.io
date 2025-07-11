@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import type { TraitName, TraitValue } from '../types/traits';
+import { TRAIT_DESCRIPTORS } from '../types/traits';
 
 interface TraitsSectionProps {
     traitAssignment: Record<TraitName, TraitValue | null>;
@@ -17,6 +18,15 @@ interface TraitsSectionProps {
     handleTraitChange: (trait: TraitName, value: TraitValue | '') => void;
     resetTraitAssignment: () => void;
 }
+
+const traitLabels: Record<TraitName, string> = {
+    agility: 'AGILITY',
+    strength: 'STRENGTH',
+    finesse: 'FINESSE',
+    instinct: 'INSTINCT',
+    presence: 'PRESENCE',
+    knowledge: 'KNOWLEDGE',
+};
 
 const TraitsSection: React.FC<TraitsSectionProps> = ({
     traitAssignment,
@@ -33,132 +43,31 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
         </Box>
         <Box style={{ marginBottom: 16 }}>
             <Stack spacing={2} direction="column">
-                {/* AGILITY */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>AGILITY:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['agility'] !== null ? String(traitAssignment['agility']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('agility', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('agility').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['agility'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['agility'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
-                {/* STRENGTH */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>STRENGTH:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['strength'] !== null ? String(traitAssignment['strength']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('strength', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('strength').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['strength'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['strength'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
-                {/* FINESSE */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>FINESSE:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['finesse'] !== null ? String(traitAssignment['finesse']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('finesse', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('finesse').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['finesse'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['finesse'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
-                {/* INSTINCT */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>INSTINCT:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['instinct'] !== null ? String(traitAssignment['instinct']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('instinct', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('instinct').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['instinct'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['instinct'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
-                {/* PRESENCE */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>PRESENCE:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['presence'] !== null ? String(traitAssignment['presence']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('presence', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('presence').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['presence'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['presence'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
-                {/* KNOWLEDGE */}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>KNOWLEDGE:</Typography>
-                    <FormControl size="small">
-                        <Select
-                            value={traitAssignment['knowledge'] !== null ? String(traitAssignment['knowledge']) : ''}
-                            onChange={e => {
-                                const val = e.target.value === '' ? '' : Number(e.target.value);
-                                handleTraitChange('knowledge', val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
-                            }}
-                            displayEmpty
-                        >
-                            <MenuItem value="">--</MenuItem>
-                            {getAvailableValues('knowledge').map(val => (
-                                <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {traitIssues['knowledge'] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
-                    {traitIssues['knowledge'] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
-                </Box>
+                {(Object.keys(traitLabels) as TraitName[]).map(trait => (
+                    <Box key={trait} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>{traitLabels[trait]}:</Typography>
+                        <Typography sx={{ fontSize: 13, fontStyle: 'italic', color: 'text.secondary', minWidth: 120 }}>
+                            {TRAIT_DESCRIPTORS[trait].join(' • ')}
+                        </Typography>
+                        <FormControl size="small">
+                            <Select
+                                value={traitAssignment[trait] !== null ? String(traitAssignment[trait]) : ''}
+                                onChange={e => {
+                                    const val = e.target.value === '' ? '' : Number(e.target.value);
+                                    handleTraitChange(trait, val === '' ? '' : ([-1, 0, 1, 2].includes(val) ? (val as TraitValue) : ''));
+                                }}
+                                displayEmpty
+                            >
+                                <MenuItem value="">--</MenuItem>
+                                {getAvailableValues(trait).map(val => (
+                                    <MenuItem key={val} value={String(val)}>{val >= 0 ? `+${val}` : val}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {traitIssues[trait] === 'duplicate' && <Typography color="error" fontSize={12}>Duplicate</Typography>}
+                        {traitIssues[trait] === 'unassigned' && <Typography sx={{ color: '#b59a00', fontSize: 12 }}>Unassigned</Typography>}
+                    </Box>
+                ))}
             </Stack>
         </Box>
         <Typography sx={{ mt: 1, fontSize: 14 }}>

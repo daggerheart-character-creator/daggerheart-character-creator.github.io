@@ -9,4 +9,14 @@ export const TRAIT_NAMES = [
     'presence',
     'knowledge',
 ] as const;
-export type TraitName = typeof TRAIT_NAMES[number]; 
+export type TraitName = typeof TRAIT_NAMES[number];
+
+// Trait descriptors from the core rules
+export const TRAIT_DESCRIPTORS: Record<TraitName, [string, string, string]> = {
+    agility: ['Leap', 'Sprint', 'Maneuver'],
+    strength: ['Lift', 'Smash', 'Endure'],
+    finesse: ['Sneak', 'Pick', 'Tinker'],
+    instinct: ['Notice', 'React', 'Survive'],
+    presence: ['Charm', 'Command', 'Inspire'],
+    knowledge: ['Recall', 'Analyze', 'Solve'],
+}; 
