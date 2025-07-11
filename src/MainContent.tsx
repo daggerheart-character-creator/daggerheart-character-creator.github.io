@@ -1,5 +1,6 @@
 import Container from '@mui/material/Container';
 import React from 'react';
+import BackgroundSection from './sections/BackgroundSection';
 import DomainCardsSection from './sections/DomainCardsSection';
 import ExperiencesSection from './sections/ExperiencesSection';
 import FeaturesSection from './sections/FeaturesDomainsSection';
@@ -106,6 +107,9 @@ const MainContent: React.FC<MainContentProps> = (props) => {
                         Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
                     </p>
                 </section>
+            )}
+            {activeSection === 'background' && (
+                <BackgroundSection />
             )}
         </Container>
     );

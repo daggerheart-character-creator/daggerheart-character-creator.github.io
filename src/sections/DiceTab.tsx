@@ -90,9 +90,9 @@ const DiceTab: React.FC = () => {
     };
 
     const handleDamageRoll = () => {
-        let diceCount = customDiceCount;
-        let sides = Number(customDiceType.replace('d', ''));
-        let modifier = customModifier === '' || isNaN(Number(customModifier)) ? 0 : Number(customModifier);
+        const diceCount = customDiceCount;
+        const sides = Number(customDiceType.replace('d', ''));
+        const modifier = customModifier === '' || isNaN(Number(customModifier)) ? 0 : Number(customModifier);
         let sourceLabel = '';
         if (damageSource === 'weapon') {
             if (!selectedWeapon) return;

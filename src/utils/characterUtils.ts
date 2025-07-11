@@ -1,6 +1,19 @@
-import type { DaggerheartCharacter } from '../types/characterTypes';
+import { CLASS_SUGGESTIONS } from '../constants/characterOptions';
+import { coreItems } from '../constants/items';
+import type { DaggerheartCharacter, InventoryItem } from '../types/characterTypes';
 
 export const generateId = () => crypto.randomUUID();
+
+export function parseStartingInventory(className: string): InventoryItem[] {
+    const classKey = (className && CLASS_SUGGESTIONS[className as keyof typeof CLASS_SUGGESTIONS]) ? className as keyof typeof CLASS_SUGGESTIONS : 'Bard';
+    const invString = CLASS_SUGGESTIONS[classKey].inventory;
+    return invString.split(',').map(s => s.trim()).filter(Boolean).map(name => {
+        // Try to match to a core item (case-insensitive)
+        const core = coreItems.find(item => item.name.toLowerCase() === name.toLowerCase());
+        if (core) return { ...core };
+        return { name, source: 'class' };
+    });
+}
 
 export const createNewCharacter = (): DaggerheartCharacter => ({
     id: generateId(),
@@ -23,7 +36,7 @@ export const createNewCharacter = (): DaggerheartCharacter => ({
     knowledge: 0,
     evasion: 10,
     gold: { handfuls: 0, bags: 0, chests: 0 },
-    inventory: '',
+    inventory: parseStartingInventory('Bard'), // Default to Bard if class not set
     experiences: [],
     classFeatures: '',
     domainCards: [],

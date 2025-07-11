@@ -50,6 +50,14 @@ export interface CommunityDetail {
     feature: { name: string; description: string };
 }
 
+export interface InventoryItem {
+    name: string;
+    source?: 'core' | 'class' | 'custom';
+    notes?: string;
+    quantity?: number;
+    type?: string; // e.g., 'consumable', 'equipment', etc.
+}
+
 export interface DaggerheartCharacter {
     id: string;
     name: string;
@@ -75,7 +83,7 @@ export interface DaggerheartCharacter {
         bags: number;
         chests: number;
     };
-    inventory: string;
+    inventory: InventoryItem[];
     experiences: { text: string; bonus: number }[];
     classFeatures: string;
     domainCards: DomainCard[];
@@ -84,4 +92,6 @@ export interface DaggerheartCharacter {
     traitUpgrades: TraitUpgrades;
     armorSlots?: boolean[];
     completed?: boolean;
+    background?: Record<string, string>;
+    connections?: Record<string, string>;
 } 

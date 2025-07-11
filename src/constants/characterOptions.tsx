@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaBook, FaBoxOpen, FaDna, FaHeartbeat, FaScroll, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
+import { FaBook, FaBoxOpen, FaDna, FaHeartbeat, FaQuestionCircle, FaScroll, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import type { DaggerheartCharacter } from '../types/characterTypes';
 import type { TraitName } from '../types/traits';
 
@@ -99,5 +99,6 @@ export const SECTIONS: { key: string; label: string; icon: React.ReactNode }[] =
     { key: 'features', label: 'Features', icon: <FaStar /> },
     { key: 'domains', label: 'Domains', icon: <FaScroll /> },
     { key: 'inventory', label: 'Inventory', icon: <FaBoxOpen /> },
+    { key: 'background', label: 'Background', icon: <FaQuestionCircle /> },
     // Rally only for Bard
 ]; 

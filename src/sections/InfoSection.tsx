@@ -14,6 +14,7 @@ import { CLASS_DETAILS } from '../constants/classDetails';
 import { COMMUNITY_DETAILS } from '../constants/communityDetails';
 import { SUBCLASS_DETAILS } from '../constants/subclassDetails';
 import type { AncestryDetail, CommunityDetail, SubclassDetail } from '../types/characterTypes';
+import { parseStartingInventory } from '../utils/characterUtils';
 
 interface InfoSectionProps {
     // currentCharacter: DaggerheartCharacter; // Removed
@@ -32,6 +33,21 @@ const InfoSection: React.FC<InfoSectionProps> = ({
 }) => {
     const { currentCharacter, updateCharacterField } = useCharacter();
     const classDetail: ClassDetail | undefined = currentCharacter.characterClass ? CLASS_DETAILS[currentCharacter.characterClass] : undefined;
+    const prevClassRef = React.useRef(currentCharacter.characterClass);
+    React.useEffect(() => {
+        // Only update if class actually changes
+        if (currentCharacter.characterClass && prevClassRef.current !== currentCharacter.characterClass) {
+            // If inventory is empty or matches previous class's starting items, update it
+            const prevItems = prevClassRef.current ? parseStartingInventory(prevClassRef.current) : [];
+            const inv = currentCharacter.inventory;
+            const isDefault = !inv || (Array.isArray(inv) && inv.length === 0) ||
+                (Array.isArray(inv) && prevItems.length > 0 && inv.every((item, i) => prevItems[i] && item.name === prevItems[i].name));
+            if (isDefault) {
+                updateCharacterField('inventory', parseStartingInventory(currentCharacter.characterClass));
+            }
+            prevClassRef.current = currentCharacter.characterClass;
+        }
+    }, [currentCharacter.characterClass]);
 
     return (
         <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
