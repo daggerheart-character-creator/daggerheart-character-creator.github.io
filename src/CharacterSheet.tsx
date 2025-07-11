@@ -169,7 +169,7 @@ const CharacterSheet: React.FC = () => {
         }
     }, [currentCharacter, lastClass]);
 
-    // When class changes, set HP to startingHP for that class
+    // In CharacterSheet.tsx, update the effect that runs when class changes to also set traits
     React.useEffect(() => {
         if (!currentCharacter) return;
         const className = currentCharacter.characterClass;
@@ -192,7 +192,6 @@ const CharacterSheet: React.FC = () => {
         if (currentCharacter.hp.length !== startingHP) {
             updateCharacterField('hp', Array(startingHP).fill(false));
         }
-
         // Set default weapon
         const suggestion = CLASS_SUGGESTIONS[className as CharacterClass];
         if (suggestion && suggestion.weapon) {
@@ -205,7 +204,6 @@ const CharacterSheet: React.FC = () => {
                 updateCharacterField('activeWeapons', [weaponObj, { name: '', traitRange: '', damageDiceType: '', feature: '' }]);
             }
         }
-
         // Set default armor (by class)
         let defaultArmor = 'Gambeson Armor';
         if (className === 'Guardian' || className === 'Warrior') defaultArmor = 'Chainmail Armor';
@@ -216,6 +214,12 @@ const CharacterSheet: React.FC = () => {
         const armorObj = ARMOR_OPTIONS.find(a => a.name === defaultArmor);
         if (armorObj) {
             updateCharacterField('activeArmor', [{ name: armorObj.name, feature: armorObj.feature }]);
+        }
+        // Set recommended traits
+        if (suggestion && suggestion.traits) {
+            Object.entries(suggestion.traits).forEach(([trait, value]) => {
+                updateCharacterField(trait as keyof DaggerheartCharacter, value);
+            });
         }
     }, [currentCharacter?.characterClass]);
 
@@ -353,6 +357,9 @@ const CharacterSheet: React.FC = () => {
     const isCompleted = !isCreationMode;
     const mode = isCompleted ? 'play' : 'creation';
 
+    // Determine which section to show based on mode
+    const currentSection = mode === 'play' ? playTab : activeSection;
+
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
@@ -405,9 +412,9 @@ const CharacterSheet: React.FC = () => {
                 </Box>
             </Box>
             <Box sx={{ pt: mode === 'play' ? 8 : 0 }}>
-                <h1 style={{ textAlign: 'center', marginTop: 24 }}>Daggerheart Character Sheet</h1>
+                <h1 style={{ textAlign: 'center', marginTop: 0 }}>Daggerheart Character Sheet</h1>
                 <MainContent
-                    activeSection={activeSection}
+                    activeSection={currentSection}
                     currentCharacter={currentCharacter}
                     updateCharacterField={updateCharacterField}
                     subclassOptions={subclassOptions}
@@ -429,9 +436,11 @@ const CharacterSheet: React.FC = () => {
                     handleArmorChange={handleArmorChange}
                 />
                 <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
-                    <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
-                        Complete Character
-                    </button>
+                    {mode === 'creation' && (
+                        <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                            Complete Character
+                        </button>
+                    )}
                     {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
                 </div>
                 {/* Creation mode bottom nav */}
