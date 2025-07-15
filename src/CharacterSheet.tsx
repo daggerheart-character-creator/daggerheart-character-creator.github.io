@@ -7,7 +7,6 @@ import MenuItem from '@mui/material/MenuItem';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaBook, FaBoxOpen, FaDiceD20, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import { useCharacter } from './CharacterContext';
-import './CharacterSheet.css';
 import { ARMOR_OPTIONS } from './constants/armor';
 import type { CharacterClass } from './constants/characterOptions';
 import {

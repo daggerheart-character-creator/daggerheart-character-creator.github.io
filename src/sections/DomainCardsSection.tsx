@@ -168,7 +168,9 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
                                                 }}
                                                 aria-label={expandedCards[card.name] ? 'Collapse' : 'Expand'}
                                             >
-                                                <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{expandedCards[card.name] ? '–' : '+'}</span>
+                                                <Box sx={{ fontSize: '1.1rem', lineHeight: 1 }}>
+                                                    {expandedCards[card.name] ? '–' : '+'}
+                                                </Box>
                                             </IconButton>
                                             <Typography variant="subtitle2" fontWeight={600} sx={{ flexGrow: 1, ml: 1, mr: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {card.name} – {card.level}

@@ -1,3 +1,14 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { useState } from 'react';
 import { useCharacter } from '../CharacterContext';
 import { TRAIT_NAMES } from '../types/traits';
@@ -106,177 +117,157 @@ const DiceTab: React.FC = () => {
     };
 
     return (
-        <div style={{ padding: 16, maxWidth: 480, margin: '0 auto' }}>
-            <h2>Dice Roller</h2>
-            <section style={{ marginBottom: 32 }}>
-                <h3>Duality Dice (Action Roll)</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 }}>
-                    <label>
-                        Trait:
-                        <select value={selectedTrait} onChange={e => setSelectedTrait(e.target.value)} style={{ marginLeft: 8 }}>
+        <Box sx={{ p: 2, maxWidth: 480, mx: 'auto' }}>
+            <Typography variant="h4" align="center" gutterBottom>Dice Roller</Typography>
+            <Paper sx={{ p: 2, mb: 4 }}>
+                <Typography variant="h6" gutterBottom>Duality Dice (Action Roll)</Typography>
+                <Stack spacing={2} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel id="trait-select-label">Trait</InputLabel>
+                        <Select
+                            labelId="trait-select-label"
+                            value={selectedTrait}
+                            label="Trait"
+                            onChange={e => setSelectedTrait(e.target.value)}
+                        >
                             {TRAIT_NAMES.map(trait => (
-                                <option key={trait} value={trait}>
+                                <MenuItem key={trait} value={trait}>
                                     {trait.charAt(0).toUpperCase() + trait.slice(1)} ({currentCharacter[trait] >= 0 ? '+' : ''}{currentCharacter[trait]})
-                                </option>
+                                </MenuItem>
                             ))}
-                        </select>
-                    </label>
-                    <label>
-                        Modifier:
-                        <span style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 8 }}>
-                            <button
-                                type="button"
-                                onClick={() => setModifier((prev) => String((Number(prev || '0') - 1)))}
-                                style={{
-                                    width: 28,
-                                    height: 28,
-                                    fontSize: 18,
-                                    marginRight: 2,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: '0 6px',
-                                }}
-                            >
-                                −
-                            </button>
-                            <input
-                                type="text"
-                                inputMode="numeric"
-                                pattern="-?\d*"
-                                value={modifier}
-                                onChange={e => setModifier(e.target.value.replace(/[^-\d]/g, ''))}
-                                onBlur={handleModifierBlur}
-                                style={{ width: 40, textAlign: 'center' }}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setModifier((prev) => String((Number(prev || '0') + 1)))}
-                                style={{
-                                    width: 28,
-                                    height: 28,
-                                    fontSize: 18,
-                                    marginLeft: 2,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    padding: '0 6px',
-                                }}
-                            >
-                                +
-                            </button>
-                        </span>
-                    </label>
-                    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={advantage}
-                                onChange={e => { setAdvantage(e.target.checked); if (e.target.checked) setDisadvantage(false); }}
-                            />
-                            Advantage (add d6)
-                        </label>
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={disadvantage}
-                                onChange={e => { setDisadvantage(e.target.checked); if (e.target.checked) setAdvantage(false); }}
-                            />
-                            Disadvantage (subtract d6)
-                        </label>
-                    </div>
-                    <button onClick={handleRoll} style={{ marginTop: 8, fontSize: 16, padding: '6px 18px' }}>Roll</button>
-                </div>
+                        </Select>
+                    </FormControl>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <Typography>Modifier:</Typography>
+                        <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => setModifier((prev) => String((Number(prev || '0') - 1)))}>-</Button>
+                        <TextField
+                            type="text"
+                            inputProps={{ inputMode: 'numeric', pattern: '-?\d*', style: { textAlign: 'center' } }}
+                            value={modifier}
+                            onChange={e => setModifier(e.target.value.replace(/[^-\d]/g, ''))}
+                            onBlur={handleModifierBlur}
+                            sx={{ width: 56 }}
+                            size="small"
+                        />
+                        <Button size="small" variant="outlined" sx={{ minWidth: 28, width: 28, height: 28, p: 0 }} onClick={() => setModifier((prev) => String((Number(prev || '0') + 1)))}>+</Button>
+                    </Stack>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <FormControl>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                                <Checkbox
+                                    checked={advantage}
+                                    onChange={e => { setAdvantage(e.target.checked); if (e.target.checked) setDisadvantage(false); }}
+                                    size="small"
+                                />
+                                <Typography>Advantage (add d6)</Typography>
+                            </Stack>
+                        </FormControl>
+                        <FormControl>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                                <Checkbox
+                                    checked={disadvantage}
+                                    onChange={e => { setDisadvantage(e.target.checked); if (e.target.checked) setAdvantage(false); }}
+                                    size="small"
+                                />
+                                <Typography>Disadvantage (subtract d6)</Typography>
+                            </Stack>
+                        </FormControl>
+                    </Stack>
+                    <Button variant="contained" onClick={handleRoll} sx={{ mt: 1, fontSize: 16, alignSelf: 'flex-start' }}>Roll</Button>
+                </Stack>
                 {result && (
-                    <div style={{ marginTop: 16, background: '#23272a', color: '#fff', borderRadius: 8, padding: 16 }}>
-                        <div>Trait: <b>{selectedTrait.charAt(0).toUpperCase() + selectedTrait.slice(1)} ({result.traitValue >= 0 ? '+' : ''}{result.traitValue})</b></div>
-                        <div>Modifier: <b>{modifierNum >= 0 ? '+' : ''}{modifierNum}</b></div>
-                        <div>Hope d12: <b>{result.hope}</b> {result.hope === 12 && '🎉 Critical!'} {result.hope === 1 && '💀 Fumble!'}</div>
-                        <div>Fear d12: <b>{result.fear}</b> {result.fear === 12 && '🎉 Critical!'} {result.fear === 1 && '💀 Fumble!'}</div>
-                        {result.advType && <div>{result.advType === 'advantage' ? 'Advantage' : 'Disadvantage'} d6: <b>{result.d6}</b></div>}
-                        <div style={{ fontSize: 18, marginTop: 8 }}>Total: <b>{result.total} with {result.usedDie}</b></div>
-                    </div>
+                    <Box sx={{ mt: 2, background: '#23272a', color: '#fff', borderRadius: 2, p: 2 }}>
+                        <Typography>Trait: <b>{selectedTrait.charAt(0).toUpperCase() + selectedTrait.slice(1)} ({result.traitValue >= 0 ? '+' : ''}{result.traitValue})</b></Typography>
+                        <Typography>Modifier: <b>{modifierNum >= 0 ? '+' : ''}{modifierNum}</b></Typography>
+                        <Typography>Hope d12: <b>{result.hope}</b> {result.hope === 12 && '🎉 Critical!'} {result.hope === 1 && '💀 Fumble!'}</Typography>
+                        <Typography>Fear d12: <b>{result.fear}</b> {result.fear === 12 && '🎉 Critical!'} {result.fear === 1 && '💀 Fumble!'}</Typography>
+                        {result.advType && <Typography>{result.advType === 'advantage' ? 'Advantage' : 'Disadvantage'} d6: <b>{result.d6}</b></Typography>}
+                        <Typography sx={{ fontSize: 18, mt: 1 }}>Total: <b>{result.total} with {result.usedDie}</b></Typography>
+                    </Box>
                 )}
-            </section>
-            <section>
-                <h3>Damage Roll</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 }}>
-                    <label>
-                        Source:
-                        <select value={damageSource} onChange={e => setDamageSource(e.target.value as 'weapon' | 'custom')} style={{ marginLeft: 8 }}>
-                            <option value="weapon">Equipped Weapon</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </label>
+            </Paper>
+            <Paper sx={{ p: 2 }}>
+                <Typography variant="h6" gutterBottom>Damage Roll</Typography>
+                <Stack spacing={2} mb={2}>
+                    <FormControl fullWidth>
+                        <InputLabel id="damage-source-label">Source</InputLabel>
+                        <Select
+                            labelId="damage-source-label"
+                            value={damageSource}
+                            label="Source"
+                            onChange={e => setDamageSource(e.target.value as 'weapon' | 'custom')}
+                        >
+                            <MenuItem value="weapon">Equipped Weapon</MenuItem>
+                            <MenuItem value="custom">Custom</MenuItem>
+                        </Select>
+                    </FormControl>
                     {damageSource === 'weapon' && (
-                        <label>
-                            Weapon:
-                            <select value={selectedWeaponIdx} onChange={e => setSelectedWeaponIdx(Number(e.target.value))} style={{ marginLeft: 8 }}>
-                                {equippedWeapons.length === 0 && <option value={-1}>No weapon equipped</option>}
+                        <FormControl fullWidth>
+                            <InputLabel id="weapon-select-label">Weapon</InputLabel>
+                            <Select
+                                labelId="weapon-select-label"
+                                value={selectedWeaponIdx}
+                                label="Weapon"
+                                onChange={e => setSelectedWeaponIdx(Number(e.target.value))}
+                            >
+                                {equippedWeapons.length === 0 && <MenuItem value={-1}>No weapon equipped</MenuItem>}
                                 {equippedWeapons.map((w, idx) => (
-                                    <option key={w.name + idx} value={idx}>{w.name} ({w.damageDiceType})</option>
+                                    <MenuItem key={w.name + idx} value={idx}>{w.name} ({w.damageDiceType})</MenuItem>
                                 ))}
-                            </select>
-                        </label>
+                            </Select>
+                        </FormControl>
                     )}
-                    <label>
-                        Number of Dice:
-                        <input
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography>Number of Dice:</Typography>
+                        <TextField
                             type="number"
-                            min={1}
+                            inputProps={{ min: 1 }}
                             value={customDiceCount}
                             onChange={e => setCustomDiceCount(Math.max(1, Number(e.target.value)))}
-                            style={{ width: 40, marginLeft: 8 }}
+                            sx={{ width: 56 }}
+                            size="small"
                             disabled={damageSource === 'weapon'}
                         />
-                    </label>
-                    <label>
-                        Dice Type:
-                        <select
-                            value={customDiceType}
-                            onChange={e => setCustomDiceType(e.target.value)}
-                            style={{ marginLeft: 8 }}
-                            disabled={damageSource === 'weapon'}
-                        >
-                            <option value="d4">d4</option>
-                            <option value="d6">d6</option>
-                            <option value="d8">d8</option>
-                            <option value="d10">d10</option>
-                            <option value="d12">d12</option>
-                            <option value="d20">d20</option>
-                        </select>
-                    </label>
-                    <label>
-                        Modifier:
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="-?\d*"
+                    </Stack>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography>Dice Type:</Typography>
+                        <FormControl sx={{ minWidth: 80 }} size="small">
+                            <Select
+                                value={customDiceType}
+                                onChange={e => setCustomDiceType(e.target.value)}
+                                disabled={damageSource === 'weapon'}
+                            >
+                                <MenuItem value="d4">d4</MenuItem>
+                                <MenuItem value="d6">d6</MenuItem>
+                                <MenuItem value="d8">d8</MenuItem>
+                                <MenuItem value="d10">d10</MenuItem>
+                                <MenuItem value="d12">d12</MenuItem>
+                                <MenuItem value="d20">d20</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Stack>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography>Modifier:</Typography>
+                        <TextField
+                            type="number"
                             value={customModifier}
-                            onChange={e => setCustomModifier(e.target.value.replace(/[^-\d]/g, ''))}
-                            style={{ width: 40, marginLeft: 8, textAlign: 'center' }}
-                            disabled={damageSource === 'weapon'}
+                            onChange={e => setCustomModifier(e.target.value)}
+                            sx={{ width: 56 }}
+                            size="small"
                         />
-                    </label>
-                    <button
-                        onClick={handleDamageRoll}
-                        style={{ marginTop: 8, fontSize: 16, padding: '6px 18px' }}
-                        disabled={damageSource === 'weapon' ? (!selectedWeapon || proficiencyCount === 0) : (customDiceCount < 1 || isNaN(Number(customDiceType.replace('d', ''))))}
-                    >
-                        Roll Damage
-                    </button>
-                </div>
+                    </Stack>
+                    <Button variant="contained" onClick={handleDamageRoll} sx={{ mt: 1, fontSize: 16, alignSelf: 'flex-start' }}>Roll Damage</Button>
+                </Stack>
                 {damageResult && (
-                    <div style={{ marginTop: 16, background: '#23272a', color: '#fff', borderRadius: 8, padding: 16 }}>
-                        <div>Source: <b>{damageResult.sourceLabel}</b></div>
-                        <div>Rolled: <b>{damageResult.diceCount} × d{damageResult.sides}</b></div>
-                        <div>Dice Results: <b>{damageResult.dice.join(', ')}</b></div>
-                        {damageResult.modifier !== 0 && <div>Static Modifier: <b>{damageResult.modifier > 0 ? '+' : ''}{damageResult.modifier}</b></div>}
-                        <div style={{ fontSize: 18, marginTop: 8 }}>Total: <b>{damageResult.total}</b></div>
-                    </div>
+                    <Box sx={{ mt: 2, background: '#23272a', color: '#fff', borderRadius: 2, p: 2 }}>
+                        <Typography>Source: <b>{damageResult.sourceLabel}</b></Typography>
+                        <Typography>Dice: <b>{damageResult.dice.join(', ')}</b></Typography>
+                        <Typography>Modifier: <b>{damageResult.modifier >= 0 ? '+' : ''}{damageResult.modifier}</b></Typography>
+                        <Typography sx={{ fontSize: 18, mt: 1 }}>Total: <b>{damageResult.total}</b></Typography>
+                    </Box>
                 )}
-            </section>
-        </div>
+            </Paper>
+        </Box>
     );
 };
 

@@ -1,8 +1,10 @@
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useCharacter } from '../CharacterContext';
@@ -36,13 +38,15 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = () => {
         <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
             <Typography variant="h5" gutterBottom>EXPERIENCES</Typography>
             {experiences.map((exp, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
-                    <input
+                <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
+                    <TextField
                         type="text"
                         placeholder={`Experience ${idx + 1}`}
                         value={exp.text}
                         onChange={e => handleExperienceChange(idx, 'text', e.target.value)}
-                        style={{ flex: 1, marginRight: 8, background: 'inherit', color: 'inherit', border: '1px solid #ccc', borderRadius: 4, height: 32 }}
+                        variant="outlined"
+                        size="small"
+                        sx={{ flex: 1, mr: 1 }}
                     />
                     <Button
                         onClick={() => handleExperienceChange(idx, 'bonus', Math.max(0, exp.bonus - 1))}
@@ -53,11 +57,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = () => {
                     >
                         -
                     </Button>
-                    <Typography
-                        variant="body1"
-                    >
-                        {exp.bonus}
-                    </Typography>
+                    <Typography variant="body1">{exp.bonus}</Typography>
                     <Button
                         onClick={() => handleExperienceChange(idx, 'bonus', exp.bonus + 1)}
                         aria-label="Increase bonus"
@@ -70,7 +70,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = () => {
                     <IconButton onClick={() => handleRemoveExperience(idx)} aria-label="Delete experience" size="small">
                         <DeleteIcon fontSize="small" />
                     </IconButton>
-                </div>
+                </Box>
             ))}
             <IconButton onClick={handleAddExperience} aria-label="Add experience" size="small" color="primary">
                 <AddIcon />

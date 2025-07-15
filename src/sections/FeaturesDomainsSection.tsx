@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import React from 'react';
@@ -23,57 +24,57 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = () => {
             <Typography variant="h5" gutterBottom>FEATURES & ABILITIES</Typography>
             {/* Class Features */}
             {classDetail && classDetail.classFeatures && (
-                <div style={{ marginBottom: 16 }}>
+                <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Class Features</Typography>
                     {classDetail.classFeatures.map((feature, idx) => (
-                        <div key={idx} style={{ marginBottom: 12 }}>
+                        <Box key={idx} sx={{ mb: 1.5 }}>
                             <Typography variant="subtitle2" fontWeight={600}>{feature.name}</Typography>
                             <Typography variant="body2">{feature.description}</Typography>
-                        </div>
+                        </Box>
                     ))}
-                </div>
+                </Box>
             )}
             {/* Subclass Features */}
             {subclassDetail && (
-                <div style={{ marginBottom: 16 }}>
+                <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Subclass Features</Typography>
-                    <div style={{ marginBottom: 8 }}>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>Foundation Feature: {subclassDetail.foundationFeature.name}</Typography>
                         <Typography variant="body2">{subclassDetail.foundationFeature.description}</Typography>
-                    </div>
-                    <div style={{ marginBottom: 8 }}>
+                    </Box>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>Specialization Feature: {subclassDetail.specializationFeature.name}</Typography>
                         <Typography variant="body2">{subclassDetail.specializationFeature.description}</Typography>
-                    </div>
-                    <div style={{ marginBottom: 8 }}>
+                    </Box>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>Mastery Feature: {subclassDetail.masteryFeature.name}</Typography>
                         <Typography variant="body2">{subclassDetail.masteryFeature.description}</Typography>
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             )}
             {/* Ancestry Features */}
             {ancestryDetail && (
-                <div style={{ marginBottom: 16 }}>
+                <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Ancestry Features</Typography>
-                    <div style={{ marginBottom: 8 }}>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>{ancestryDetail.feature1.name}</Typography>
                         <Typography variant="body2">{ancestryDetail.feature1.description}</Typography>
-                    </div>
-                    <div style={{ marginBottom: 8 }}>
+                    </Box>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>{ancestryDetail.feature2.name}</Typography>
                         <Typography variant="body2">{ancestryDetail.feature2.description}</Typography>
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             )}
             {/* Community Features */}
             {communityDetail && (
-                <div style={{ marginBottom: 16 }}>
+                <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Community Feature</Typography>
-                    <div style={{ marginBottom: 8 }}>
+                    <Box sx={{ mb: 1 }}>
                         <Typography variant="subtitle2" fontWeight={600}>{communityDetail.feature.name}</Typography>
                         <Typography variant="body2">{communityDetail.feature.description}</Typography>
-                    </div>
-                </div>
+                    </Box>
+                </Box>
             )}
             {/* Fallback if nothing is selected */}
             {!classDetail && !subclassDetail && !ancestryDetail && !communityDetail && (

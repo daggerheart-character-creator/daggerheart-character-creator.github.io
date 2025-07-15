@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -59,18 +60,32 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
     // Handler to add/remove bubbles for a resource
     const handleBubbleChange = (resource: 'hp' | 'stress' | 'hope' | 'proficiency' | 'armorSlots', action: 'add' | 'remove') => {
         let arr = (currentCharacter[resource] as boolean[]) || [];
-        if (action === 'add') {
-            arr = [...arr, false];
-        } else if (action === 'remove' && arr.length > 0) {
-            arr = arr.slice(0, -1);
+        if (resource === 'hope') {
+            if (action === 'add' && arr.length < 10) {
+                arr = [...arr, false];
+            } else if (action === 'remove' && arr.length > 1) {
+                arr = arr.slice(0, -1);
+            }
+        } else {
+            if (action === 'add') {
+                arr = [...arr, false];
+            } else if (action === 'remove' && arr.length > 0) {
+                arr = arr.slice(0, -1);
+            }
         }
         updateCharacterField(resource as any, arr);
     };
     // Handler to increment/decrement evasion
     const handleEvasionChange = (delta: number) => {
-        const newEvasion = (currentCharacter.evasion || 0) + delta;
+        const newEvasion = (currentCharacter.evasion ?? totalEvasion) + delta;
         updateCharacterField('evasion', newEvasion);
     };
+
+    React.useEffect(() => {
+        if (currentCharacter && (!Array.isArray(currentCharacter.hope) || currentCharacter.hope.length === 0)) {
+            updateCharacterField('hope', Array(6).fill(false));
+        }
+    }, [currentCharacter, updateCharacterField]);
 
     return (
         <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box', mt: 0 }}>
@@ -85,21 +100,25 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
             </Box>
             <Box className="evasion" mb={2} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Typography fontWeight={700} sx={{ fontSize: 18, mr: 1 }}>Evasion:</Typography>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <button
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <IconButton
                         onClick={() => handleEvasionChange(-1)}
-                        style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', marginRight: 2 }}
+                        size="small"
+                        sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, mr: 0.5 }}
                         aria-label="Decrease Evasion"
-                    >-
-                    </button>
-                    <Typography fontWeight={700} sx={{ fontSize: 18, mx: 1 }}>{totalEvasion}</Typography>
-                    <button
+                    >
+                        -
+                    </IconButton>
+                    <Typography fontWeight={700} sx={{ fontSize: 18, mx: 1 }}>{typeof currentCharacter.evasion === 'number' ? currentCharacter.evasion : totalEvasion}</Typography>
+                    <IconButton
                         onClick={() => handleEvasionChange(1)}
-                        style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', marginLeft: 2 }}
+                        size="small"
+                        sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, ml: 0.5 }}
                         aria-label="Increase Evasion"
-                    >+
-                    </button>
-                </span>
+                    >
+                        +
+                    </IconButton>
+                </Box>
                 <Typography variant="body2" color="text.secondary" sx={{ ml: 0.5 }}>
                     (Base: {baseEvasion}{armorMod !== 0 ? `, Armor: ${armorMod > 0 ? '+' : ''}${armorMod}` : ''})
                 </Typography>
@@ -109,27 +128,30 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
                     <Typography fontWeight={600} sx={{ mr: 1 }}>
                         HP: {totalHP}
                     </Typography>
-                    <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <button
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                        <IconButton
                             onClick={() => handleBubbleChange('hp', 'add')}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0 }}
                             aria-label="Add HP"
-                        >+
-                        </button>
-                        <button
+                        >
+                            +
+                        </IconButton>
+                        <IconButton
                             onClick={() => handleBubbleChange('hp', 'remove')}
-                            disabled={currentCharacter.hp.length <= 1}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', opacity: currentCharacter.hp.length <= 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, opacity: currentCharacter.hp.length <= 1 ? 0.5 : 1 }}
                             aria-label="Remove HP"
-                        >-
-                        </button>
-                    </span>
+                            disabled={currentCharacter.hp.length <= 1}
+                        >
+                            -
+                        </IconButton>
+                    </Box>
                 </Box>
                 <Stack direction="row" spacing={1} mb={2}>
                     {currentCharacter?.hp.map((filled: boolean, index: number) => (
                         <Box
                             key={index}
-                            className={`circle${filled ? ' filled' : ''}`}
                             onClick={() => toggleCircles('hp', index)}
                             sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer' }}
                         />
@@ -137,27 +159,30 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
                 </Stack>
                 <Box mb={1} display="flex" alignItems="center">
                     <Typography fontWeight={600} sx={{ mr: 1 }}>ARMOR:</Typography>
-                    <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <button
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                        <IconButton
                             onClick={() => handleBubbleChange('armorSlots', 'add')}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0 }}
                             aria-label="Add Armor Slot"
-                        >+
-                        </button>
-                        <button
+                        >
+                            +
+                        </IconButton>
+                        <IconButton
                             onClick={() => handleBubbleChange('armorSlots', 'remove')}
-                            disabled={armorSlots.length <= 0}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', opacity: armorSlots.length <= 0 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, opacity: armorSlots.length <= 0 ? 0.5 : 1 }}
                             aria-label="Remove Armor Slot"
-                        >-
-                        </button>
-                    </span>
+                            disabled={armorSlots.length <= 0}
+                        >
+                            -
+                        </IconButton>
+                    </Box>
                 </Box>
                 <Stack direction="row" spacing={1} mb={2}>
                     {armorSlots.map((filled: boolean, index: number) => (
                         <Box
                             key={index}
-                            className={`circle${filled ? ' filled' : ''}`}
                             onClick={() => toggleCircles('armorSlots', index)}
                             sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #b59a00', backgroundColor: filled ? '#b59a00' : '#fff', cursor: 'pointer' }}
                         />
@@ -165,27 +190,30 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
                 </Stack>
                 <Box mb={1} display="flex" alignItems="center">
                     <Typography fontWeight={600} sx={{ mr: 1 }}>STRESS:</Typography>
-                    <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <button
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                        <IconButton
                             onClick={() => handleBubbleChange('stress', 'add')}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0 }}
                             aria-label="Add Stress"
-                        >+
-                        </button>
-                        <button
+                        >
+                            +
+                        </IconButton>
+                        <IconButton
                             onClick={() => handleBubbleChange('stress', 'remove')}
-                            disabled={currentCharacter.stress.length <= 1}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', opacity: currentCharacter.stress.length <= 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, opacity: currentCharacter.stress.length <= 1 ? 0.5 : 1 }}
                             aria-label="Remove Stress"
-                        >-
-                        </button>
-                    </span>
+                            disabled={currentCharacter.stress.length <= 1}
+                        >
+                            -
+                        </IconButton>
+                    </Box>
                 </Box>
                 <Stack direction="row" spacing={1} mb={2}>
                     {currentCharacter?.stress.map((filled: boolean, index: number) => (
                         <Box
                             key={index}
-                            className={`circle${filled ? ' filled' : ''}`}
                             onClick={() => toggleCircles('stress', index)}
                             sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer' }}
                         />
@@ -193,27 +221,31 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
                 </Stack>
                 <Box mb={1} display="flex" alignItems="center">
                     <Typography fontWeight={600} sx={{ mr: 1 }}>HOPE:</Typography>
-                    <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <button
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                        <IconButton
                             onClick={() => handleBubbleChange('hope', 'add')}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0 }}
                             aria-label="Add Hope"
-                        >+
-                        </button>
-                        <button
+                            disabled={currentCharacter.hope.length >= 10}
+                        >
+                            +
+                        </IconButton>
+                        <IconButton
                             onClick={() => handleBubbleChange('hope', 'remove')}
-                            disabled={currentCharacter.hope.length <= 1}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', opacity: currentCharacter.hope.length <= 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, opacity: currentCharacter.hope.length <= 1 ? 0.5 : 1 }}
                             aria-label="Remove Hope"
-                        >-
-                        </button>
-                    </span>
+                            disabled={currentCharacter.hope.length <= 1}
+                        >
+                            -
+                        </IconButton>
+                    </Box>
                 </Box>
                 <Stack direction="row" spacing={1} mb={2}>
-                    {currentCharacter?.hope.slice(0, 6).map((filled: boolean, index: number) => (
+                    {currentCharacter?.hope.map((filled: boolean, index: number) => (
                         <Box
                             key={index}
-                            className={`circle${filled ? ' filled' : ''}`}
                             onClick={() => toggleCircles('hope', index)}
                             sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer' }}
                         />
@@ -228,29 +260,32 @@ const HealthSection: React.FC<HealthSectionProps> = ({ calculateThreshold }) => 
                 )}
                 <Box mb={1} display="flex" alignItems="center">
                     <Typography fontWeight={600} sx={{ mr: 1 }}>PROFICIENCY:</Typography>
-                    <span style={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                        <button
+                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                        <IconButton
                             onClick={() => handleBubbleChange('proficiency', 'add')}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0 }}
                             aria-label="Add Proficiency"
-                        >+
-                        </button>
-                        <button
+                        >
+                            +
+                        </IconButton>
+                        <IconButton
                             onClick={() => handleBubbleChange('proficiency', 'remove')}
-                            disabled={currentCharacter.proficiency.length <= 1}
-                            style={{ fontSize: 18, width: 28, height: 28, borderRadius: 4, border: '1px solid #ccc', cursor: 'pointer', opacity: currentCharacter.proficiency.length <= 1 ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px' }}
+                            size="small"
+                            sx={{ fontSize: 18, width: 28, height: 28, borderRadius: 1, border: '1px solid #ccc', p: 0, opacity: currentCharacter.proficiency.length <= 1 ? 0.5 : 1 }}
                             aria-label="Remove Proficiency"
-                        >-
-                        </button>
-                    </span>
+                            disabled={currentCharacter.proficiency.length <= 1}
+                        >
+                            -
+                        </IconButton>
+                    </Box>
                 </Box>
                 <Stack direction="row" spacing={1} mb={2}>
                     {currentCharacter?.proficiency.map((filled: boolean, index: number) => (
                         <Box
                             key={index}
-                            className={`circle${filled ? ' filled' : ''}`}
                             onClick={() => toggleCircles('proficiency', index)}
-                            sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #27ae60', backgroundColor: filled ? '#27ae60' : '#fff', cursor: 'pointer' }}
+                            sx={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid #3498db', backgroundColor: filled ? '#3498db' : '#fff', cursor: 'pointer' }}
                         />
                     ))}
                 </Stack>

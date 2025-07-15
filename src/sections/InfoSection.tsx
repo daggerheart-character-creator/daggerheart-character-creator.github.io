@@ -1,4 +1,7 @@
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
@@ -32,6 +35,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
     COMMUNITY_OPTIONS,
 }) => {
     const { currentCharacter, updateCharacterField } = useCharacter();
+    const [mixedAncestry, setMixedAncestry] = React.useState(!!currentCharacter.secondaryHeritage);
     const classDetail: ClassDetail | undefined = currentCharacter.characterClass ? CLASS_DETAILS[currentCharacter.characterClass] : undefined;
     const prevClassRef = React.useRef(currentCharacter.characterClass);
     React.useEffect(() => {
@@ -48,6 +52,20 @@ const InfoSection: React.FC<InfoSectionProps> = ({
             prevClassRef.current = currentCharacter.characterClass;
         }
     }, [currentCharacter.characterClass]);
+
+    // Helper to get ancestry features
+    const getFeatures = (ancestry: string) => {
+        const detail = ANCESTRY_DETAILS[ancestry];
+        return detail ? [detail.feature1, detail.feature2] : [];
+    };
+    // Handlers
+    const handleMixedAncestryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMixedAncestry(e.target.checked);
+        if (!e.target.checked) {
+            updateCharacterField('secondaryHeritage', '');
+            updateCharacterField('ancestryFeature2', '');
+        }
+    };
 
     return (
         <Paper elevation={2} sx={{ p: 2, mb: 2, boxSizing: 'border-box' }}>
@@ -97,13 +115,13 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                                 <Typography variant="body2" gutterBottom>
                                     <b>Class Feature{classDetail.classFeatures.length > 1 ? 's' : ''}:</b>
                                 </Typography>
-                                <ul style={{ marginTop: 0, marginBottom: 8, paddingLeft: 20 }}>
+                                <Box sx={{ mt: 0, mb: 1, pl: 2 }}>
                                     {classDetail.classFeatures.map((feature, idx) => (
-                                        <li key={idx}>
+                                        <Typography key={idx} variant="body2" sx={{ display: 'list-item', pl: 1 }}>
                                             <i>{feature?.name || 'Unknown Feature'}</i> — {feature?.description || 'No description available.'}
-                                        </li>
+                                        </Typography>
                                     ))}
-                                </ul>
+                                </Box>
                             </>
                         )}
                         {classDetail.hopeFeature && (
@@ -159,41 +177,176 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             );
                         })()
                     )}
-                <FormControl fullWidth>
-                    <InputLabel id="ancestry-select-label">Ancestry</InputLabel>
-                    <Select
-                        labelId="ancestry-select-label"
-                        value={currentCharacter.heritage}
-                        label="Ancestry"
-                        onChange={e => updateCharacterField('heritage', e.target.value)}
-                    >
-                        <MenuItem value=""><em>Select an ancestry...</em></MenuItem>
-                        {ANCESTRY_OPTIONS.map(anc => (
-                            <MenuItem key={anc} value={anc}>{anc}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                {/* Ancestry Details Card */}
-                {currentCharacter.heritage && ANCESTRY_DETAILS[currentCharacter.heritage] && (
+                {/* Ancestry Selection */}
+                <FormControlLabel
+                    control={<Checkbox checked={mixedAncestry} onChange={handleMixedAncestryChange} />}
+                    label="Mixed Ancestry (choose features from two ancestries)"
+                    sx={{ mb: 1 }}
+                />
+                {!mixedAncestry ? (
+                    <>
+                        <FormControl fullWidth>
+                            <InputLabel id="ancestry-select-label">Ancestry</InputLabel>
+                            <Select
+                                labelId="ancestry-select-label"
+                                value={currentCharacter.heritage}
+                                label="Ancestry"
+                                onChange={e => {
+                                    updateCharacterField('heritage', e.target.value);
+                                    updateCharacterField('ancestryFeature1', '');
+                                }}
+                            >
+                                <MenuItem value=""><em>Select an ancestry...</em></MenuItem>
+                                {ANCESTRY_OPTIONS.map(anc => (
+                                    <MenuItem key={anc} value={anc}>{anc}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        {/* Feature Picker */}
+                        {currentCharacter.heritage && (
+                            <FormControl fullWidth sx={{ mt: 1 }}>
+                                <InputLabel id="feature1-select-label">Ancestry Feature</InputLabel>
+                                <Select
+                                    labelId="feature1-select-label"
+                                    value={currentCharacter.ancestryFeature1 || ''}
+                                    label="Ancestry Feature"
+                                    onChange={e => updateCharacterField('ancestryFeature1', e.target.value)}
+                                >
+                                    <MenuItem value=""><em>Select a feature...</em></MenuItem>
+                                    {getFeatures(currentCharacter.heritage).map(f => (
+                                        <MenuItem key={f.name} value={f.name}><b>{f.name}</b>: {f.description}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                            <FormControl fullWidth>
+                                <InputLabel id="ancestry1-select-label">Ancestry 1</InputLabel>
+                                <Select
+                                    labelId="ancestry1-select-label"
+                                    value={currentCharacter.heritage}
+                                    label="Ancestry 1"
+                                    onChange={e => {
+                                        updateCharacterField('heritage', e.target.value);
+                                        updateCharacterField('ancestryFeature1', '');
+                                    }}
+                                >
+                                    <MenuItem value=""><em>Select ancestry 1...</em></MenuItem>
+                                    {ANCESTRY_OPTIONS.filter(anc => anc !== currentCharacter.secondaryHeritage).map(anc => (
+                                        <MenuItem key={anc} value={anc}>{anc}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <InputLabel id="ancestry2-select-label">Ancestry 2</InputLabel>
+                                <Select
+                                    labelId="ancestry2-select-label"
+                                    value={currentCharacter.secondaryHeritage || ''}
+                                    label="Ancestry 2"
+                                    onChange={e => {
+                                        updateCharacterField('secondaryHeritage', e.target.value);
+                                        updateCharacterField('ancestryFeature2', '');
+                                    }}
+                                >
+                                    <MenuItem value=""><em>Select ancestry 2...</em></MenuItem>
+                                    {ANCESTRY_OPTIONS.filter(anc => anc !== currentCharacter.heritage).map(anc => (
+                                        <MenuItem key={anc} value={anc}>{anc}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Stack>
+                        {/* Feature Pickers */}
+                        {currentCharacter.heritage && (
+                            <FormControl fullWidth sx={{ mt: 1 }}>
+                                <InputLabel id="feature1-select-label">Feature from Ancestry 1</InputLabel>
+                                <Select
+                                    labelId="feature1-select-label"
+                                    value={currentCharacter.ancestryFeature1 || ''}
+                                    label="Feature from Ancestry 1"
+                                    onChange={e => updateCharacterField('ancestryFeature1', e.target.value)}
+                                    disabled={!currentCharacter.heritage}
+                                >
+                                    <MenuItem value=""><em>Select a feature...</em></MenuItem>
+                                    {getFeatures(currentCharacter.heritage).map(f => (
+                                        <MenuItem key={f.name} value={f.name}><b>{f.name}</b>: {f.description}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+                        {currentCharacter.secondaryHeritage && (
+                            <FormControl fullWidth sx={{ mt: 1 }}>
+                                <InputLabel id="feature2-select-label">Feature from Ancestry 2</InputLabel>
+                                <Select
+                                    labelId="feature2-select-label"
+                                    value={currentCharacter.ancestryFeature2 || ''}
+                                    label="Feature from Ancestry 2"
+                                    onChange={e => updateCharacterField('ancestryFeature2', e.target.value)}
+                                    disabled={!currentCharacter.secondaryHeritage}
+                                >
+                                    <MenuItem value=""><em>Select a feature...</em></MenuItem>
+                                    {getFeatures(currentCharacter.secondaryHeritage).map(f => (
+                                        <MenuItem key={f.name} value={f.name}><b>{f.name}</b>: {f.description}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        )}
+                    </>
+                )}
+                {/* Ancestry Details Card(s) */}
+                {!mixedAncestry && currentCharacter.heritage && ANCESTRY_DETAILS[currentCharacter.heritage] && (
                     (() => {
                         const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.heritage];
                         return (
                             <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
                                 <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
                                 <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
-                                {ancestryDetail.feature1 && (
-                                    <Typography variant="body2" gutterBottom>
-                                        <b>Feature:</b> <i>{ancestryDetail.feature1.name || 'Unknown'}</i> — {ancestryDetail.feature1.description || 'No description available.'}
+                                {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
+                                    <Typography key={i} variant="body2" gutterBottom>
+                                        <b>Feature:</b> <i>{f.name || 'Unknown'}</i> — {f.description || 'No description available.'}
                                     </Typography>
-                                )}
-                                {ancestryDetail.feature2 && (
-                                    <Typography variant="body2" gutterBottom>
-                                        <b>Feature:</b> <i>{ancestryDetail.feature2.name || 'Unknown'}</i> — {ancestryDetail.feature2.description || 'No description available.'}
-                                    </Typography>
-                                )}
+                                ))}
                             </Paper>
                         );
                     })()
+                )}
+                {mixedAncestry && (
+                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                        {currentCharacter.heritage && ANCESTRY_DETAILS[currentCharacter.heritage] && (
+                            (() => {
+                                const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.heritage];
+                                return (
+                                    <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2, flex: 1 }}>
+                                        <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
+                                        <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
+                                        {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
+                                            <Typography key={i} variant="body2" gutterBottom>
+                                                <b>Feature:</b> <i>{f.name || 'Unknown'}</i> — {f.description || 'No description available.'}
+                                            </Typography>
+                                        ))}
+                                    </Paper>
+                                );
+                            })()
+                        )}
+                        {currentCharacter.secondaryHeritage && ANCESTRY_DETAILS[currentCharacter.secondaryHeritage] && (
+                            (() => {
+                                const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.secondaryHeritage];
+                                return (
+                                    <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2, flex: 1 }}>
+                                        <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
+                                        <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
+                                        {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
+                                            <Typography key={i} variant="body2" gutterBottom>
+                                                <b>Feature:</b> <i>{f.name || 'Unknown'}</i> — {f.description || 'No description available.'}
+                                            </Typography>
+                                        ))}
+                                    </Paper>
+                                );
+                            })()
+                        )}
+                    </Stack>
                 )}
                 <FormControl fullWidth>
                     <InputLabel id="community-select-label">Community</InputLabel>

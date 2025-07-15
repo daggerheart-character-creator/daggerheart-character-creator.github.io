@@ -1,4 +1,6 @@
 import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import BackgroundSection from './sections/BackgroundSection';
 import DomainCardsSection from './sections/DomainCardsSection';
@@ -101,12 +103,12 @@ const MainContent: React.FC<MainContentProps> = (props) => {
             )}
             {/* Rally Section (Bard only) */}
             {currentCharacter?.characterClass === 'Bard' && activeSection === 'rally' && (
-                <section className="rally-section box">
-                    <h2>RALLY</h2>
-                    <p>
+                <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+                    <Typography variant="h5" gutterBottom>RALLY</Typography>
+                    <Typography variant="body1">
                         Once per session, describe how you rally the party and give yourself and each of your allies a Rally Die. At level 1, your Rally Die is a d6. A PC can spend their Rally Die to roll it, adding the result to their action roll, reaction roll, damage roll, or to clear a number of Stress equal to the result. Your Rally Die increases at higher levels.
-                    </p>
-                </section>
+                    </Typography>
+                </Paper>
             )}
             {activeSection === 'background' && (
                 <BackgroundSection />

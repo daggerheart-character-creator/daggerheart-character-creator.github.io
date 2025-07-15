@@ -41,7 +41,7 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
             <Typography variant="body1">Assign the following values to the six traits: <b>−1, 0, 0, +1, +1, +2</b>. Each value must be used exactly once. Traits affect your character's abilities in different situations.</Typography>
         </Box>
-        <Box style={{ marginBottom: 16 }}>
+        <Box sx={{ mb: 2 }}>
             <Stack spacing={2} direction="column">
                 {(Object.keys(traitLabels) as TraitName[]).map(trait => (
                     <Box key={trait} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

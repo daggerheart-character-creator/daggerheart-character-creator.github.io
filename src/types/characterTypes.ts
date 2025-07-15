@@ -94,4 +94,8 @@ export interface DaggerheartCharacter {
     completed?: boolean;
     background?: Record<string, string>;
     connections?: Record<string, string>;
+    // Mixed ancestry support
+    secondaryHeritage?: string;
+    ancestryFeature1?: string;
+    ancestryFeature2?: string;
 } 

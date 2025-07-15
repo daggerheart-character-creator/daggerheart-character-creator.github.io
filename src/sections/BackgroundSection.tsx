@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
@@ -76,7 +77,7 @@ const BackgroundSection: React.FC = () => {
             </Typography>
             <Stack spacing={3} sx={{ mb: 4 }}>
                 {classData.questions.map((q) => (
-                    <div key={q}>
+                    <Box key={q}>
                         <Typography variant="subtitle1" sx={{ mb: 1 }}>{q}</Typography>
                         <TextField
                             value={backgroundAnswers[q] || ''}
@@ -87,33 +88,37 @@ const BackgroundSection: React.FC = () => {
                             variant="outlined"
                             placeholder="Your answer..."
                         />
-                    </div>
+                    </Box>
                 ))}
                 {/* Custom background questions */}
                 {customBgQuestions.map(key => (
-                    <div key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                        <TextField
-                            label="Custom Background Question"
-                            value={key.replace(CUSTOM_BG_PREFIX, '')}
-                            disabled
-                            sx={{ flex: 2 }}
-                        />
+                    <Box key={key} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 1.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <TextField
+                                label="Custom Background Question"
+                                value={key.replace(CUSTOM_BG_PREFIX, '')}
+                                disabled
+                                size="medium"
+                                sx={{ mb: 0, maxWidth: 500 }}
+                            />
+                            <IconButton aria-label="Remove" onClick={() => handleRemoveCustomBg(key)} size="small" sx={{ ml: 1 }}>
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
                         <TextField
                             value={backgroundAnswers[key] || ''}
                             onChange={e => handleBackgroundChange(key, e.target.value)}
                             fullWidth
                             multiline
-                            minRows={2}
+                            minRows={1}
                             variant="outlined"
                             placeholder="Your answer..."
-                            sx={{ flex: 3 }}
+                            size="medium"
+                            sx={{ maxWidth: 500 }}
                         />
-                        <IconButton aria-label="Remove" onClick={() => handleRemoveCustomBg(key)} size="small" sx={{ mt: 1 }}>
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </div>
+                    </Box>
                 ))}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <TextField
                         label="Add custom background question"
                         value={newCustomBg}
@@ -123,7 +128,7 @@ const BackgroundSection: React.FC = () => {
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomBg(); } }}
                     />
                     <Button onClick={handleAddCustomBg} variant="contained" color="primary" sx={{ minWidth: 40, height: 40 }}>Add</Button>
-                </div>
+                </Box>
             </Stack>
             <Typography variant="subtitle1" sx={{ mb: 2 }}>
                 CONNECTIONS<br />
@@ -131,7 +136,7 @@ const BackgroundSection: React.FC = () => {
             </Typography>
             <Stack spacing={3}>
                 {classData.connections.map((q) => (
-                    <div key={q}>
+                    <Box key={q}>
                         <Typography variant="subtitle1" sx={{ mb: 1 }}>{q}</Typography>
                         <TextField
                             value={connectionAnswers[q] || ''}
@@ -142,33 +147,37 @@ const BackgroundSection: React.FC = () => {
                             variant="outlined"
                             placeholder="Their answer..."
                         />
-                    </div>
+                    </Box>
                 ))}
                 {/* Custom connection questions */}
                 {customConnQuestions.map(key => (
-                    <div key={key} style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                        <TextField
-                            label="Custom Connection Question"
-                            value={key.replace(CUSTOM_CONN_PREFIX, '')}
-                            disabled
-                            sx={{ flex: 2 }}
-                        />
+                    <Box key={key} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 1.5 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <TextField
+                                label="Custom Connection Question"
+                                value={key.replace(CUSTOM_CONN_PREFIX, '')}
+                                disabled
+                                size="medium"
+                                sx={{ mb: 0, maxWidth: 500 }}
+                            />
+                            <IconButton aria-label="Remove" onClick={() => handleRemoveCustomConn(key)} size="small" sx={{ ml: 1 }}>
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
                         <TextField
                             value={connectionAnswers[key] || ''}
                             onChange={e => handleConnectionChange(key, e.target.value)}
                             fullWidth
                             multiline
-                            minRows={2}
+                            minRows={1}
                             variant="outlined"
                             placeholder="Their answer..."
-                            sx={{ flex: 3 }}
+                            size="medium"
+                            sx={{ maxWidth: 500 }}
                         />
-                        <IconButton aria-label="Remove" onClick={() => handleRemoveCustomConn(key)} size="small" sx={{ mt: 1 }}>
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </div>
+                    </Box>
                 ))}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <TextField
                         label="Add custom connection question"
                         value={newCustomConn}
@@ -178,7 +187,7 @@ const BackgroundSection: React.FC = () => {
                         onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddCustomConn(); } }}
                     />
                     <Button onClick={handleAddCustomConn} variant="contained" color="primary" sx={{ minWidth: 40, height: 40 }}>Add</Button>
-                </div>
+                </Box>
             </Stack>
         </Paper>
     );
