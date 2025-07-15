@@ -173,7 +173,7 @@ export const CLASS_DETAILS: Record<string, ClassDetail> = {
     },
     Wizard: {
         name: "Wizard",
-        domains: ["Codex", "Arcana"],
+        domains: ["Codex", "Splendor"],
         description: `Wizards are scholars and masters of arcane knowledge, using their intellect to wield powerful magic and manipulate the world around them.`,
         classFeatures: [
             {
