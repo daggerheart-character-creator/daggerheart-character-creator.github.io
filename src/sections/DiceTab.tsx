@@ -176,7 +176,7 @@ const DiceTab: React.FC = () => {
                     <Button variant="contained" onClick={handleRoll} sx={{ mt: 1, fontSize: 16, alignSelf: 'flex-start' }}>Roll</Button>
                 </Stack>
                 {result && (
-                    <Box sx={{ mt: 2, background: '#23272a', color: '#fff', borderRadius: 2, p: 2 }}>
+                    <Box sx={{ mt: 2, borderRadius: 2, p: 2 }}>
                         <Typography>Trait: <b>{selectedTrait.charAt(0).toUpperCase() + selectedTrait.slice(1)} ({result.traitValue >= 0 ? '+' : ''}{result.traitValue})</b></Typography>
                         <Typography>Modifier: <b>{modifierNum >= 0 ? '+' : ''}{modifierNum}</b></Typography>
                         <Typography>Hope d12: <b>{result.hope}</b> {result.hope === 12 && '🎉 Critical!'} {result.hope === 1 && '💀 Fumble!'}</Typography>
@@ -259,7 +259,7 @@ const DiceTab: React.FC = () => {
                     <Button variant="contained" onClick={handleDamageRoll} sx={{ mt: 1, fontSize: 16, alignSelf: 'flex-start' }}>Roll Damage</Button>
                 </Stack>
                 {damageResult && (
-                    <Box sx={{ mt: 2, background: '#23272a', color: '#fff', borderRadius: 2, p: 2 }}>
+                    <Box sx={{ mt: 2, borderRadius: 2, p: 2 }}>
                         <Typography>Source: <b>{damageResult.sourceLabel}</b></Typography>
                         <Typography>Dice: <b>{damageResult.dice.join(', ')}</b></Typography>
                         <Typography>Modifier: <b>{damageResult.modifier >= 0 ? '+' : ''}{damageResult.modifier}</b></Typography>

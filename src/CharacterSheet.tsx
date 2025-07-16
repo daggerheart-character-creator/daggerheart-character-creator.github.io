@@ -1,9 +1,14 @@
 import AddIcon from '@mui/icons-material/Add';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import DeleteIcon from '@mui/icons-material/Delete';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaBook, FaBoxOpen, FaDiceD20, FaHeartbeat, FaShieldAlt, FaStar, FaUser } from 'react-icons/fa';
 import { useCharacter } from './CharacterContext';
@@ -40,6 +45,7 @@ const CharacterSheet: React.FC = () => {
     const [creationError, setCreationError] = useState<string | null>(null);
     const [activeSection, setActiveSection] = useState('info');
     const [playTab, setPlayTab] = useState('resources');
+    const theme = useTheme();
 
     const calculateThreshold = useCallback((base: number) => {
         return currentCharacter ? base + currentCharacter.level : base;
@@ -248,6 +254,11 @@ const CharacterSheet: React.FC = () => {
     // Determine which section to show based on mode
     const currentSection = mode === 'play' ? playTab : activeSection;
 
+    // Determine nav items and selected key based on mode
+    const navItems = mode === 'play' ? PLAY_TABS : SECTIONS;
+    const selectedNavKey = mode === 'play' ? playTab : activeSection;
+    const setSelectedNavKey = mode === 'play' ? setPlayTab : setActiveSection;
+
     if (!currentCharacter) {
         return <div className="character-sheet-container">Loading character...</div>;
     }
@@ -263,14 +274,15 @@ const CharacterSheet: React.FC = () => {
     };
 
     return (
-        <div className="character-sheet-container">
-            {/* Persistent Character Switcher Bar */}
-            <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, background: '#23272a', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56 }}>
+        <div className="character-sheet-container" style={{ minHeight: '100vh', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+            {/* Top Bar - not scrollable */}
+            <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, background: '#23272a', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56, flex: 'none' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
-                    <button
+                    <Button
                         onClick={handleMenuClick}
-                        style={{ background: 'none', border: 'none', color: '#f3f3f3', fontSize: 18, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
+                        sx={{ fontSize: 18, display: 'flex', alignItems: 'center', cursor: 'pointer', p: 0, minWidth: 0 }}
                         aria-label="Switch character"
+                        disableRipple
                     >
                         <span style={{ fontWeight: 700, fontSize: 18, marginRight: 6 }}>
                             {currentCharacter?.name || 'Unnamed Character'}
@@ -279,7 +291,7 @@ const CharacterSheet: React.FC = () => {
                             {currentCharacter?.characterClass ? `(${currentCharacter.characterClass})` : ''}
                         </span>
                         <ArrowDropDownIcon style={{ color: '#f3f3f3' }} />
-                    </button>
+                    </Button>
                     <Menu anchorEl={anchorEl} open={characterMenuOpen} onClose={handleMenuClose}>
                         {characters.map(char => (
                             <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => { setCurrentCharacterId(char.id); handleMenuClose(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200 }}>
@@ -287,30 +299,32 @@ const CharacterSheet: React.FC = () => {
                                     {char.name || 'Unnamed Character'} {char.characterClass ? `(${char.characterClass})` : ''}
                                 </span>
                                 {char.id !== currentCharacterId && (
-                                    <button
+                                    <Button
                                         onClick={e => { e.stopPropagation(); deleteCharacter(char.id); }}
-                                        style={{ background: 'none', border: 'none', color: '#f44336', marginLeft: 8, cursor: 'pointer', padding: 0 }}
+                                        sx={{ minWidth: 0, ml: 1, p: 0 }}
                                         aria-label="Delete character"
+                                        disableRipple
                                     >
                                         <DeleteIcon fontSize="small" />
-                                    </button>
+                                    </Button>
                                 )}
                             </MenuItem>
                         ))}
                     </Menu>
                 </Box>
                 <Box sx={{ flex: 'none', ml: 2 }}>
-                    <button
+                    <Button
                         onClick={addCharacter}
-                        style={{ background: 'none', border: 'none', color: '#4CAF50', fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', padding: 0 }}
+                        sx={{ fontSize: 22, display: 'flex', alignItems: 'center', cursor: 'pointer', p: 0, minWidth: 0 }}
                         aria-label="Create new character"
+                        disableRipple
                     >
                         <AddIcon style={{ color: '#4CAF50', fontSize: 28 }} />
-                    </button>
+                    </Button>
                 </Box>
             </Box>
-            <Box sx={{ pt: mode === 'play' ? 8 : 0 }}>
-                <h1 style={{ textAlign: 'center', marginTop: 0 }}>Daggerheart Character Sheet</h1>
+            {/* Main Content - vertically scrollable, not horizontally */}
+            <Box sx={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', pt: mode === 'play' ? 8 : 0, pb: 8 }}>
                 <MainContent
                     activeSection={currentSection}
                     currentCharacter={currentCharacter}
@@ -332,45 +346,53 @@ const CharacterSheet: React.FC = () => {
                 )}
                 <div className="complete-character-btn-container" style={{ marginTop: 24, textAlign: 'center' }}>
                     {mode === 'creation' && (
-                        <button onClick={handleCompleteCharacter} style={{ fontSize: 18, padding: '8px 24px' }}>
+                        <Button
+                            onClick={handleCompleteCharacter}
+                            variant="contained"
+                            color="primary"
+                            sx={{ fontSize: 18, px: 3, py: 1.5 }}
+                        >
                             Complete Character
-                        </button>
+                        </Button>
                     )}
                     {creationError && <div style={{ color: 'red', marginTop: 8 }}>{creationError}</div>}
                 </div>
-                {/* Creation mode bottom nav */}
-                <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
-                    {SECTIONS.map(section => (
-                        <button
-                            key={section.key}
-                            className={activeSection === section.key ? 'active' : ''}
-                            onClick={() => setActiveSection(section.key)}
-                            aria-label={section.label}
-                            style={{ flex: 1, background: 'none', border: 'none', color: activeSection === section.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
-                        >
-                            {section.icon}
-                            <span className="nav-label" style={{ fontSize: 12 }}>{section.label}</span>
-                        </button>
-                    ))}
-                </Box>
             </Box>
-            {/* Bottom Tab Bar for Play Mode */}
-            {mode === 'play' && (
-                <Box className="mobile-nav" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1200, background: '#23272a', borderTop: '1px solid #333', display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: 64 }}>
-                    {PLAY_TABS.map(tab => (
-                        <button
-                            key={tab.key}
-                            className={playTab === tab.key ? 'active' : ''}
-                            onClick={() => setPlayTab(tab.key)}
-                            aria-label={tab.label}
-                            style={{ flex: 1, background: 'none', border: 'none', color: playTab === tab.key ? '#4CAF50' : '#f3f3f3', fontSize: 18, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}
-                        >
-                            {tab.icon}
-                            <span className="nav-label" style={{ fontSize: 12 }}>{tab.label}</span>
-                        </button>
-                    ))}
+            {/* Bottom Navigation - always fixed, horizontally scrollable */}
+            <Paper sx={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 1400, backgroundColor: theme.palette.primary.main }} elevation={3}>
+                <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                    <BottomNavigation
+                        showLabels
+                        value={navItems.findIndex(item => item.key === selectedNavKey)}
+                        onChange={(event, newValue) => setSelectedNavKey(navItems[newValue].key)}
+                        sx={{ backgroundColor: theme.palette.primary.main, minWidth: 'max-content' }}
+                    >
+                        {navItems.map((item, idx) => (
+                            <BottomNavigationAction
+                                key={item.key}
+                                label={item.label}
+                                icon={item.icon}
+                                sx={{
+                                    display: 'inline-block',
+                                    minWidth: 80,
+                                    backgroundColor: selectedNavKey === item.key ? theme.palette.primary.dark : theme.palette.primary.main,
+                                    color: selectedNavKey === item.key ? theme.palette.primary.contrastText : theme.palette.primary.contrastText,
+                                    borderRadius: 2,
+                                    mx: 0.5,
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    gap: 1,
+                                    '& .MuiBottomNavigationAction-label': {
+                                        mt: 0.5,
+                                        textAlign: 'center',
+                                        width: '100%',
+                                    },
+                                }}
+                            />
+                        ))}
+                    </BottomNavigation>
                 </Box>
-            )}
+            </Paper>
         </div>
     );
 };

@@ -170,7 +170,7 @@ const InventorySection: React.FC<InventorySectionProps> = () => {
                 </Button>
                 {/* Add/Edit Item Dialog */}
                 <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullScreen={isMobile} maxWidth="xs" fullWidth>
-                    <DialogTitle sx={{ color: 'text.primary', fontWeight: 600, fontSize: '1.25rem' }}>{editIndex !== null ? 'Edit Item' : 'Add Item'}</DialogTitle>
+                    <DialogTitle sx={{ fontWeight: 600, fontSize: '1.25rem' }}>{editIndex !== null ? 'Edit Item' : 'Add Item'}</DialogTitle>
                     <DialogContent sx={{ pt: 2 }}>
                         <Autocomplete
                             options={coreItems}

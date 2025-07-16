@@ -101,7 +101,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                 </FormControl>
                 {/* Class Details Card */}
                 {classDetail && (
-                    <Paper elevation={3} sx={{ p: 2, background: '#f8f9fa', mb: 2 }}>
+                    <Paper elevation={3} sx={{ p: 2 }}>
                         <Typography variant="h6" gutterBottom>{classDetail.name || 'Unknown Class'}</Typography>
                         <Typography variant="subtitle1" gutterBottom><b>Domains:</b> {classDetail.domains?.join(' & ') || 'Unknown'}</Typography>
                         <Typography variant="body2" gutterBottom>{classDetail.description || 'No description available.'}</Typography>
@@ -152,7 +152,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                         (() => {
                             const subclassDetail: SubclassDetail = SUBCLASS_DETAILS[currentCharacter.characterClass][currentCharacter.subclass];
                             return (
-                                <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
+                                <Paper elevation={3} sx={{ p: 2 }}>
                                     <Typography variant="h6" gutterBottom>{subclassDetail.name || 'Unknown Subclass'}</Typography>
                                     <Typography variant="body2" gutterBottom>{subclassDetail.description || 'No description available.'}</Typography>
                                     {subclassDetail.spellcastTrait && (
@@ -300,7 +300,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     (() => {
                         const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.heritage];
                         return (
-                            <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
+                            <Paper elevation={3} sx={{ p: 2 }}>
                                 <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
                                 <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
                                 {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
@@ -318,7 +318,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             (() => {
                                 const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.heritage];
                                 return (
-                                    <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2, flex: 1 }}>
+                                    <Paper elevation={3} sx={{ p: 2, flex: 1 }}>
                                         <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
                                         <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
                                         {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
@@ -334,7 +334,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                             (() => {
                                 const ancestryDetail: AncestryDetail = ANCESTRY_DETAILS[currentCharacter.secondaryHeritage];
                                 return (
-                                    <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2, flex: 1 }}>
+                                    <Paper elevation={3} sx={{ p: 2, flex: 1 }}>
                                         <Typography variant="h6" gutterBottom>{ancestryDetail.name || 'Unknown Ancestry'}</Typography>
                                         <Typography variant="body2" gutterBottom>{ancestryDetail.description || 'No description available.'}</Typography>
                                         {[ancestryDetail.feature1, ancestryDetail.feature2].map((f, i) => (
@@ -367,7 +367,7 @@ const InfoSection: React.FC<InfoSectionProps> = ({
                     (() => {
                         const communityDetail: CommunityDetail = COMMUNITY_DETAILS[currentCharacter.community];
                         return (
-                            <Paper elevation={3} sx={{ p: 2, background: '#f4f7fa', mb: 2 }}>
+                            <Paper elevation={3} sx={{ p: 2 }}>
                                 <Typography variant="h6" gutterBottom>{communityDetail.name || 'Unknown Community'}</Typography>
                                 <Typography variant="body2" gutterBottom>{communityDetail.description || 'No description available.'}</Typography>
                                 {communityDetail.feature && (

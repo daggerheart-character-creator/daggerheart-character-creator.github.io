@@ -46,7 +46,7 @@ const TraitsSection: React.FC<TraitsSectionProps> = ({
                 {(Object.keys(traitLabels) as TraitName[]).map(trait => (
                     <Box key={trait} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography sx={{ minWidth: 90, fontWeight: 600, textAlign: 'right' }}>{traitLabels[trait]}:</Typography>
-                        <Typography sx={{ fontSize: 13, fontStyle: 'italic', color: 'text.secondary', minWidth: 120 }}>
+                        <Typography sx={{ fontSize: 13, fontStyle: 'italic', minWidth: 120 }}>
                             {TRAIT_DESCRIPTORS[trait].join(' • ')}
                         </Typography>
                         <FormControl size="small">

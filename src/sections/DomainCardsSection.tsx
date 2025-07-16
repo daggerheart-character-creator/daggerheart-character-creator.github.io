@@ -98,7 +98,7 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
 
                     {/* Card Details */}
                     {selectedCardDetails && (
-                        <Paper elevation={1} sx={{ p: 2, background: '#f8f9fa' }}>
+                        <Paper elevation={1} sx={{ p: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
                                 <Typography variant="h6" fontWeight={600}>
                                     {selectedCardDetails.name}
@@ -112,10 +112,20 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
                             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
                                 Level {selectedCardDetails.level} • {selectedCardDetails.domain} • Recall Cost: {selectedCardDetails.recallCost}
                             </Typography>
-                            <Typography variant="body2" sx={{ mb: 2 }}>
-                                {selectedCardDetails.description}
-                            </Typography>
-
+                            <Box sx={{ mb: 2 }}>
+                                {Array.isArray(selectedCardDetails.description)
+                                    ? (
+                                        <ul style={{ margin: 0, paddingLeft: '1.2em' }}>
+                                            {selectedCardDetails.description.map((desc, i) => (
+                                                <li key={i}>
+                                                    <Typography variant="body2">{desc}</Typography>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )
+                                    : <Typography variant="body2">{selectedCardDetails.description}</Typography>
+                                }
+                            </Box>
                             {selectedCards.some(selected => selected.name === selectedCardDetails.name) ? (
                                 <Button
                                     variant="outlined"
@@ -146,7 +156,7 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
                             </Typography>
                             <Stack spacing={1}>
                                 {selectedCards.map((card, idx) => (
-                                    <Paper key={idx} elevation={1} sx={{ p: 1, background: '#e8f5e8' }}>
+                                    <Paper key={idx} elevation={1} sx={{ p: 1 }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1 }}>
                                             <IconButton
                                                 size="small"
@@ -191,9 +201,18 @@ const DomainCardsSection: React.FC<DomainCardsSectionProps> = () => {
                                         </Box>
                                         <Collapse in={!!expandedCards[card.name]} timeout="auto" unmountOnExit>
                                             <Box sx={{ mt: 0.5 }}>
-                                                <Typography variant="body2">
-                                                    {card.description}
-                                                </Typography>
+                                                {Array.isArray(card.description)
+                                                    ? (
+                                                        <ul style={{ margin: 0, paddingLeft: '1.2em' }}>
+                                                            {card.description.map((desc, i) => (
+                                                                <li key={i}>
+                                                                    <Typography variant="body2">{desc}</Typography>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    )
+                                                    : <Typography variant="body2">{card.description}</Typography>
+                                                }
                                             </Box>
                                         </Collapse>
                                     </Paper>
