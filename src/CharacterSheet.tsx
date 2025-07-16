@@ -276,7 +276,7 @@ const CharacterSheet: React.FC = () => {
     return (
         <div className="character-sheet-container" style={{ minHeight: '100vh', position: 'relative', display: 'flex', flexDirection: 'column' }}>
             {/* Top Bar - not scrollable */}
-            <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, background: '#23272a', borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56, flex: 'none' }}>
+            <Box sx={{ position: 'sticky', top: 0, left: 0, right: 0, zIndex: 1300, backgroundColor: theme.palette.primary.main, borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, minHeight: 56, flex: 'none', color: theme.palette.primary.contrastText }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
                     <Button
                         onClick={handleMenuClick}
@@ -284,17 +284,17 @@ const CharacterSheet: React.FC = () => {
                         aria-label="Switch character"
                         disableRipple
                     >
-                        <span style={{ fontWeight: 700, fontSize: 18, marginRight: 6 }}>
+                        <span style={{ fontWeight: 700, fontSize: 18, marginRight: 6, color: theme.palette.primary.contrastText }}>
                             {currentCharacter?.name || 'Unnamed Character'}
                         </span>
-                        <span style={{ fontWeight: 400, fontSize: 15, marginRight: 4, color: '#aaa' }}>
+                        <span style={{ fontWeight: 400, fontSize: 15, marginRight: 4, color: theme.palette.primary.contrastText, opacity: 0.7 }}>
                             {currentCharacter?.characterClass ? `(${currentCharacter.characterClass})` : ''}
                         </span>
-                        <ArrowDropDownIcon style={{ color: '#f3f3f3' }} />
+                        <ArrowDropDownIcon style={{ color: theme.palette.primary.contrastText }} />
                     </Button>
                     <Menu anchorEl={anchorEl} open={characterMenuOpen} onClose={handleMenuClose}>
                         {characters.map(char => (
-                            <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => { setCurrentCharacterId(char.id); handleMenuClose(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200 }}>
+                            <MenuItem key={char.id} selected={char.id === currentCharacterId} onClick={() => { setCurrentCharacterId(char.id); handleMenuClose(); }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: 200, color: theme.palette.primary.contrastText, background: char.id === currentCharacterId ? theme.palette.primary.dark : 'inherit' }}>
                                 <span>
                                     {char.name || 'Unnamed Character'} {char.characterClass ? `(${char.characterClass})` : ''}
                                 </span>
@@ -319,7 +319,7 @@ const CharacterSheet: React.FC = () => {
                         aria-label="Create new character"
                         disableRipple
                     >
-                        <AddIcon style={{ color: '#4CAF50', fontSize: 28 }} />
+                        <AddIcon style={{ color: theme.palette.secondary.main, fontSize: 28 }} />
                     </Button>
                 </Box>
             </Box>
@@ -364,10 +364,10 @@ const CharacterSheet: React.FC = () => {
                     <BottomNavigation
                         showLabels
                         value={navItems.findIndex(item => item.key === selectedNavKey)}
-                        onChange={(event, newValue) => setSelectedNavKey(navItems[newValue].key)}
+                        onChange={(_, newValue) => setSelectedNavKey(navItems[newValue].key)}
                         sx={{ backgroundColor: theme.palette.primary.main, minWidth: 'max-content' }}
                     >
-                        {navItems.map((item, idx) => (
+                        {navItems.map((item) => (
                             <BottomNavigationAction
                                 key={item.key}
                                 label={item.label}
