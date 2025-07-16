@@ -53,7 +53,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = () => {
                 </Box>
             )}
             {/* Ancestry Features */}
-            {ancestryDetail && (
+            {(currentCharacter.heritage && (!currentCharacter.secondaryHeritage)) && ancestryDetail && (
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Ancestry Features</Typography>
                     <Box sx={{ mb: 1 }}>
@@ -64,6 +64,33 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = () => {
                         <Typography variant="subtitle2" fontWeight={600}>{ancestryDetail.feature2.name}</Typography>
                         <Typography variant="body2">{ancestryDetail.feature2.description}</Typography>
                     </Box>
+                </Box>
+            )}
+            {(currentCharacter.heritage && currentCharacter.secondaryHeritage && currentCharacter.ancestryFeature1 && currentCharacter.ancestryFeature2) && (
+                <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ mt: 2, mb: 1 }}>Ancestry Features</Typography>
+                    {/* Primary ancestry selected feature */}
+                    {(() => {
+                        const primary = ANCESTRY_DETAILS[currentCharacter.heritage];
+                        const feature = [primary.feature1, primary.feature2].find(f => f.name === currentCharacter.ancestryFeature1);
+                        return feature ? (
+                            <Box sx={{ mb: 1 }}>
+                                <Typography variant="subtitle2" fontWeight={600}>{feature.name} (from {primary.name})</Typography>
+                                <Typography variant="body2">{feature.description}</Typography>
+                            </Box>
+                        ) : null;
+                    })()}
+                    {/* Secondary ancestry selected feature */}
+                    {(() => {
+                        const secondary = ANCESTRY_DETAILS[currentCharacter.secondaryHeritage];
+                        const feature = [secondary.feature1, secondary.feature2].find(f => f.name === currentCharacter.ancestryFeature2);
+                        return feature ? (
+                            <Box sx={{ mb: 1 }}>
+                                <Typography variant="subtitle2" fontWeight={600}>{feature.name} (from {secondary.name})</Typography>
+                                <Typography variant="body2">{feature.description}</Typography>
+                            </Box>
+                        ) : null;
+                    })()}
                 </Box>
             )}
             {/* Community Features */}

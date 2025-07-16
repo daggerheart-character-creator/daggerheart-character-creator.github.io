@@ -362,7 +362,7 @@ const CharacterSheet: React.FC = () => {
             <Paper sx={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 1400, backgroundColor: theme.palette.primary.main }} elevation={3}>
                 <Box sx={{ overflowX: 'auto', whiteSpace: 'nowrap' }}>
                     <BottomNavigation
-                        showLabels
+                        showLabels={false}
                         value={navItems.findIndex(item => item.key === selectedNavKey)}
                         onChange={(_, newValue) => setSelectedNavKey(navItems[newValue].key)}
                         sx={{ backgroundColor: theme.palette.primary.main, minWidth: 'max-content' }}
@@ -370,7 +370,6 @@ const CharacterSheet: React.FC = () => {
                         {navItems.map((item) => (
                             <BottomNavigationAction
                                 key={item.key}
-                                label={item.label}
                                 icon={item.icon}
                                 sx={{
                                     display: 'inline-block',
@@ -382,11 +381,6 @@ const CharacterSheet: React.FC = () => {
                                     flexDirection: 'column',
                                     alignItems: 'center',
                                     gap: 1,
-                                    '& .MuiBottomNavigationAction-label': {
-                                        mt: 0.5,
-                                        textAlign: 'center',
-                                        width: '100%',
-                                    },
                                 }}
                             />
                         ))}

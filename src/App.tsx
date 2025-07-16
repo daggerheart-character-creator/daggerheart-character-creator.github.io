@@ -13,6 +13,19 @@ const theme = createTheme({
     error: { main: '#e76f51' },      // red-orange
     background: { default: '#fff' },
   },
+  components: {
+    MuiSelect: {
+      defaultProps: {
+        MenuProps: {
+          PaperProps: {
+            style: {
+              maxHeight: 200,
+            },
+          },
+        },
+      },
+    },
+  },
 });
 
 const App: React.FC = () => {
